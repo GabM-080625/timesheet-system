@@ -39,6 +39,669 @@
             min-height: 100vh;
             transition: all 0.3s ease;
         }
+import React, { useState, useEffect, useMemo } from 'react';
+import { Clock, Users, Calendar, FileText, Plus, Edit2, Trash2, Download, CheckCircle, AlertCircle, Shield, User, LogOut, Eye, EyeOff } from 'lucide-react';
+
+const SecureTimesheetSystem = () => {
+  // Authentication state
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [userRole, setUserRole] = useState(null); // 'admin' or 'employee'
+  const [loginForm, setLoginForm] = useState({
+    role: 'employee',
+    password: '',
+    selectedEmployeeId: null
+  });
+  const [showPassword, setShowPassword] = useState(false);
+  const [loginError, setLoginError] = useState('');
+
+  // Sample data
+  const [employees, setEmployees] = useState([
+    { 
+      id: 1, 
+      name: 'John Doe', 
+      hourlyRate: 25.00,
+      email: 'john.doe@company.com',
+      active: true
+    },
+    { 
+      id: 2, 
+      name: 'Jane Smith', 
+      hourlyRate: 30.00,
+      email: 'jane.smith@company.com',
+      active: true
+    },
+    { 
+      id: 3, 
+      name: 'Mike Johnson', 
+      hourlyRate: 22.00,
+      email: 'mike.johnson@company.com',
+      active: true
+    }
+  ]);
+
+  const [timeEntries, setTimeEntries] = useState([
+    { id: 1, employeeId: 1, clockIn: new Date('2025-08-01T09:00:00'), clockOut: new Date('2025-08-01T17:30:00') },
+    { id: 2, employeeId: 1, clockIn: new Date('2025-08-02T08:45:00'), clockOut: new Date('2025-08-02T18:15:00') },
+    { id: 3, employeeId: 2, clockIn: new Date('2025-08-01T09:30:00'), clockOut: new Date('2025-08-01T17:00:00') },
+    { id: 4, employeeId: 2, clockIn: new Date('2025-08-02T09:00:00'), clockOut: new Date('2025-08-02T19:00:00') },
+    { id: 5, employeeId: 3, clockIn: new Date('2025-08-01T08:00:00'), clockOut: new Date('2025-08-01T16:30:00') },
+    { id: 6, employeeId: 3, clockIn: new Date('2025-08-02T08:30:00'), clockOut: new Date('2025-08-02T17:45:00') }
+  ]);
+
+  const [activeView, setActiveView] = useState('dashboard');
+  const [currentPayPeriod, setCurrentPayPeriod] = useState(getCurrentPayPeriod());
+  const [showAddEmployee, setShowAddEmployee] = useState(false);
+  const [newEmployee, setNewEmployee] = useState({ name: '', hourlyRate: '', email: '' });
+
+  // Theme colors
+  const colors = {
+    primary: '#3B82F6',
+    secondary: '#93C5FD',
+    success: '#10B981',
+    warning: '#F59E0B',
+    danger: '#EF4444',
+    admin: '#7C3AED',
+    employee: '#059669',
+    background: '#F8FAFC',
+    card: '#FFFFFF',
+    text: {
+      primary: '#1F2937',
+      secondary: '#6B7280',
+      light: '#FFFFFF'
+    }
+  };
+
+  // Authentication functions
+  const handleLogin = () => {
+    setLoginError('');
+    
+    if (loginForm.role === 'admin') {
+      if (loginForm.password === 'admin123') {
+        setIsAuthenticated(true);
+        setUserRole('admin');
+        setCurrentUser({ id: 'admin', name: 'Administrator', role: 'admin' });
+        setActiveView('dashboard');
+      } else {
+        setLoginError('Invalid admin password');
+      }
+    } else {
+      if (loginForm.selectedEmployeeId) {
+        const employee = employees.find(emp => emp.id === parseInt(loginForm.selectedEmployeeId));
+        if (employee) {
+          setIsAuthenticated(true);
+          setUserRole('employee');
+          setCurrentUser({ ...employee, role: 'employee' });
+          setActiveView('timeclock');
+        } else {
+          setLoginError('Employee not found');
+        }
+      } else {
+        setLoginError('Please select an employee');
+      }
+    }
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    setCurrentUser(null);
+    setUserRole(null);
+    setLoginForm({ role: 'employee', password: '', selectedEmployeeId: null });
+    setLoginError('');
+    setActiveView('dashboard');
+  };
+
+  // Helper functions
+  function getCurrentPayPeriod() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+    const day = now.getDate();
+
+    if (day <= 15) {
+      return {
+        start: new Date(year, month, 1),
+        end: new Date(year, month, 15, 23, 59, 59)
+      };
+    } else {
+      return {
+        start: new Date(year, month, 16),
+        end: new Date(year, month + 1, 0, 23, 59, 59)
+      };
+    }
+  }
+
+  function calculateHours(clockIn, clockOut) {
+    const diff = clockOut - clockIn;
+    return diff / (1000 * 60 * 60);
+  }
+
+  function calculateOvertimeHours(totalHours, dailyHours) {
+    const dailyOvertime = Math.max(0, dailyHours - 8);
+    return dailyOvertime;
+  }
+
+  function formatTime(date) {
+    return date.toLocaleTimeString('en-US', { 
+      hour: '2-digit', 
+      minute: '2-digit',
+      hour12: true 
+    });
+  }
+
+  function formatDate(date) {
+    return date.toLocaleDateString('en-US', { 
+      weekday: 'short',
+      month: 'short', 
+      day: 'numeric' 
+    });
+  }
+
+  // Calculate employee summary for pay period
+  const getEmployeeSummary = (employeeId, includeFinancials = false) => {
+    const employee = employees.find(e => e.id === employeeId);
+    if (!employee) return null;
+
+    const entries = timeEntries.filter(entry => 
+      entry.employeeId === employeeId &&
+      entry.clockIn >= currentPayPeriod.start &&
+      entry.clockIn <= currentPayPeriod.end
+    );
+
+    let totalHours = 0;
+    let overtimeHours = 0;
+
+    entries.forEach(entry => {
+      if (entry.clockOut) {
+        const hours = calculateHours(entry.clockIn, entry.clockOut);
+        totalHours += hours;
+        overtimeHours += calculateOvertimeHours(hours, hours);
+      }
+    });
+
+    const regularHours = Math.max(0, totalHours - overtimeHours);
+    
+    const result = {
+      employee,
+      entries,
+      totalHours: Math.round(totalHours * 100) / 100,
+      regularHours: Math.round(regularHours * 100) / 100,
+      overtimeHours: Math.round(overtimeHours * 100) / 100
+    };
+
+    // Only include financial data for admin users
+    if (includeFinancials && userRole === 'admin') {
+      const regularPay = regularHours * employee.hourlyRate;
+      const overtimePay = overtimeHours * employee.hourlyRate * 1.5;
+      const totalPay = regularPay + overtimePay;
+
+      result.totalPay = Math.round(totalPay * 100) / 100;
+      result.regularPay = Math.round(regularPay * 100) / 100;
+      result.overtimePay = Math.round(overtimePay * 100) / 100;
+    }
+
+    return result;
+  };
+
+  // Clock in/out functions
+  const clockIn = (employeeId) => {
+    // Employees can only clock in for themselves
+    if (userRole === 'employee' && employeeId !== currentUser.id) return;
+    
+    const newEntry = {
+      id: Date.now(),
+      employeeId,
+      clockIn: new Date(),
+      clockOut: null
+    };
+    setTimeEntries([...timeEntries, newEntry]);
+  };
+
+  const clockOut = (employeeId) => {
+    // Employees can only clock out for themselves
+    if (userRole === 'employee' && employeeId !== currentUser.id) return;
+
+    const activeEntry = timeEntries.find(entry => 
+      entry.employeeId === employeeId && 
+      !entry.clockOut
+    );
+    
+    if (activeEntry) {
+      setTimeEntries(timeEntries.map(entry =>
+        entry.id === activeEntry.id
+          ? { ...entry, clockOut: new Date() }
+          : entry
+      ));
+    }
+  };
+
+  const isEmployeeClockedIn = (employeeId) => {
+    return timeEntries.some(entry => 
+      entry.employeeId === employeeId && 
+      !entry.clockOut
+    );
+  };
+
+  // Admin-only functions
+  const addEmployee = () => {
+    if (userRole !== 'admin') return;
+    
+    if (newEmployee.name && newEmployee.hourlyRate) {
+      const employee = {
+        id: Date.now(),
+        name: newEmployee.name,
+        hourlyRate: parseFloat(newEmployee.hourlyRate),
+        email: newEmployee.email,
+        active: true
+      };
+      setEmployees([...employees, employee]);
+      setNewEmployee({ name: '', hourlyRate: '', email: '' });
+      setShowAddEmployee(false);
+    }
+  };
+
+  const exportPayroll = () => {
+    if (userRole !== 'admin') return;
+    
+    const summaries = employees.map(emp => getEmployeeSummary(emp.id, true));
+    const csvContent = [
+      'Employee,Regular Hours,Overtime Hours,Total Hours,Regular Pay,Overtime Pay,Total Pay',
+      ...summaries.map(s => 
+        `${s.employee.name},${s.regularHours},${s.overtimeHours},${s.totalHours},$${s.regularPay || 0},$${s.overtimePay || 0},$${s.totalPay || 0}`
+      )
+    ].join('\n');
+    
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `payroll_${currentPayPeriod.start.toISOString().split('T')[0]}.csv`;
+    a.click();
+  };
+
+  // Login Screen Component
+  const LoginScreen = () => (
+    <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: colors.background }}>
+      <div className="w-full max-w-md p-8 rounded-2xl shadow-lg bg-white">
+        <div className="text-center mb-8">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" 
+               style={{ backgroundColor: colors.primary }}>
+            <Clock size={32} color="white" />
+          </div>
+          <h1 className="text-2xl font-bold" style={{ color: colors.text.primary }}>
+            Timesheet System
+          </h1>
+          <p className="text-sm mt-2" style={{ color: colors.text.secondary }}>
+            Please select your role to continue
+          </p>
+        </div>
+
+        {/* Role Selection */}
+        <div className="mb-6">
+          <div className="flex gap-2 p-1 rounded-xl" style={{ backgroundColor: colors.background }}>
+            <button
+              onClick={() => setLoginForm({...loginForm, role: 'employee', password: '', selectedEmployeeId: null})}
+              className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all duration-200 ${
+                loginForm.role === 'employee' ? 'text-white shadow-md' : 'text-gray-600'
+              }`}
+              style={{ backgroundColor: loginForm.role === 'employee' ? colors.employee : 'transparent' }}
+            >
+              <User size={18} className="inline mr-2" />
+              Employee
+            </button>
+            <button
+              onClick={() => setLoginForm({...loginForm, role: 'admin', password: '', selectedEmployeeId: null})}
+              className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all duration-200 ${
+                loginForm.role === 'admin' ? 'text-white shadow-md' : 'text-gray-600'
+              }`}
+              style={{ backgroundColor: loginForm.role === 'admin' ? colors.admin : 'transparent' }}
+            >
+              <Shield size={18} className="inline mr-2" />
+              Admin
+            </button>
+          </div>
+        </div>
+
+        {/* Login Form */}
+        <div className="space-y-4">
+          {loginForm.role === 'admin' ? (
+            <div>
+              <label className="block text-sm font-medium mb-2" style={{ color: colors.text.primary }}>
+                Admin Password
+              </label>
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={loginForm.password}
+                  onChange={(e) => setLoginForm({...loginForm, password: e.target.value})}
+                  onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
+                  placeholder="Enter admin password"
+                  className="w-full px-4 py-3 pr-12 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 transition-all duration-200"
+                  style={{ focusRingColor: colors.admin }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+              <p className="text-xs mt-1" style={{ color: colors.text.secondary }}>
+                Hint: admin123
+              </p>
+            </div>
+          ) : (
+            <div>
+              <label className="block text-sm font-medium mb-2" style={{ color: colors.text.primary }}>
+                Select Your Name
+              </label>
+              <select
+                value={loginForm.selectedEmployeeId || ''}
+                onChange={(e) => setLoginForm({...loginForm, selectedEmployeeId: e.target.value})}
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 transition-all duration-200"
+                style={{ focusRingColor: colors.employee }}
+              >
+                <option value="">Choose your name...</option>
+                {employees.filter(emp => emp.active).map(emp => (
+                  <option key={emp.id} value={emp.id}>{emp.name}</option>
+                ))}
+              </select>
+            </div>
+          )}
+
+          {loginError && (
+            <div className="p-3 rounded-lg text-sm" style={{ backgroundColor: '#FEF2F2', color: colors.danger }}>
+              {loginError}
+            </div>
+          )}
+
+          <button
+            onClick={handleLogin}
+            className="w-full py-3 px-4 rounded-xl font-medium text-white transition-all duration-200 hover:opacity-90 active:scale-95"
+            style={{ 
+              backgroundColor: loginForm.role === 'admin' ? colors.admin : colors.employee
+            }}
+          >
+            Sign In
+          </button>
+        </div>
+
+        <div className="mt-6 pt-6 border-t text-center">
+          <p className="text-xs" style={{ color: colors.text.secondary }}>
+            {loginForm.role === 'admin' 
+              ? 'Admin access includes employee management, payroll, and financial data' 
+              : 'Employee access includes personal time tracking only'
+            }
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Header Component with role indicator
+  const Header = () => (
+    <div className="flex justify-between items-center p-4 border-b bg-white shadow-sm">
+      <div className="flex items-center gap-3">
+        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white`}
+             style={{ backgroundColor: userRole === 'admin' ? colors.admin : colors.employee }}>
+          {userRole === 'admin' ? <Shield size={18} /> : <User size={18} />}
+        </div>
+        <div>
+          <p className="font-semibold" style={{ color: colors.text.primary }}>
+            {currentUser.name}
+          </p>
+          <p className="text-xs" style={{ color: colors.text.secondary }}>
+            {userRole === 'admin' ? 'Administrator' : 'Employee'} • Pay Period: {formatDate(currentPayPeriod.start)} - {formatDate(currentPayPeriod.end)}
+          </p>
+        </div>
+      </div>
+      <button
+        onClick={handleLogout}
+        className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-all duration-200"
+      >
+        <LogOut size={18} />
+        Sign Out
+      </button>
+    </div>
+  );
+
+  // Navigation component with role-based access
+  const Navigation = () => {
+    const adminNavItems = [
+      { id: 'dashboard', label: 'Dashboard', icon: Users },
+      { id: 'timeclock', label: 'Time Clock', icon: Clock },
+      { id: 'employees', label: 'Employees', icon: Users },
+      { id: 'reports', label: 'Reports', icon: FileText }
+    ];
+
+    const employeeNavItems = [
+      { id: 'timeclock', label: 'Time Clock', icon: Clock },
+      { id: 'timesheet', label: 'My Timesheet', icon: Calendar }
+    ];
+
+    const navItems = userRole === 'admin' ? adminNavItems : employeeNavItems;
+
+    return (
+      <div className="flex flex-wrap gap-2 p-4 border-b bg-white">
+        {navItems.map(({ id, label, icon: Icon }) => (
+          <button
+            key={id}
+            onClick={() => setActiveView(id)}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
+              activeView === id 
+                ? 'text-white shadow-md' 
+                : 'text-gray-600 hover:bg-gray-100'
+            }`}
+            style={{ 
+              backgroundColor: activeView === id ? (userRole === 'admin' ? colors.admin : colors.employee) : 'transparent'
+            }}
+          >
+            <Icon size={18} />
+            {label}
+          </button>
+        ))}
+      </div>
+    );
+  };
+
+  // Admin Dashboard View
+  const AdminDashboardView = () => {
+    const summaries = employees.map(emp => getEmployeeSummary(emp.id, true));
+    const totals = summaries.reduce((acc, summary) => ({
+      totalHours: acc.totalHours + summary.totalHours,
+      regularHours: acc.regularHours + summary.regularHours,
+      overtimeHours: acc.overtimeHours + summary.overtimeHours,
+      totalPay: acc.totalPay + (summary.totalPay || 0)
+    }), { totalHours: 0, regularHours: 0, overtimeHours: 0, totalPay: 0 });
+
+    return (
+      <div className="p-6">
+        <div className="flex justify-between items-center mb-6">
+          <div>
+            <h1 className="text-2xl font-bold" style={{ color: colors.text.primary }}>
+              Admin Dashboard
+            </h1>
+            <div className="flex items-center gap-2 mt-1">
+              <Shield size={16} style={{ color: colors.admin }} />
+              <span className="text-sm" style={{ color: colors.admin }}>
+                Full Access Mode
+              </span>
+            </div>
+          </div>
+          <button
+            onClick={exportPayroll}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-white transition-all duration-200 hover:opacity-90"
+            style={{ backgroundColor: colors.success }}
+          >
+            <Download size={18} />
+            Export Payroll
+          </button>
+        </div>
+
+        {/* Summary Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          {[
+            { label: 'Total Hours', value: totals.totalHours.toFixed(1), color: colors.primary },
+            { label: 'Regular Hours', value: totals.regularHours.toFixed(1), color: colors.success },
+            { label: 'Overtime Hours', value: totals.overtimeHours.toFixed(1), color: colors.warning },
+            { label: 'Total Pay', value: `$${totals.totalPay.toFixed(2)}`, color: colors.admin }
+          ].map((stat, index) => (
+            <div key={index} className="p-4 rounded-xl bg-white shadow-sm border">
+              <p className="text-sm font-medium" style={{ color: colors.text.secondary }}>
+                {stat.label}
+              </p>
+              <p className="text-2xl font-bold mt-1" style={{ color: stat.color }}>
+                {stat.value}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        {/* Employee Summary Table */}
+        <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+          <div className="p-4 border-b">
+            <h2 className="text-lg font-semibold" style={{ color: colors.text.primary }}>
+              Employee Summary
+            </h2>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead style={{ backgroundColor: colors.background }}>
+                <tr>
+                  <th className="text-left p-4 font-medium" style={{ color: colors.text.primary }}>Employee</th>
+                  <th className="text-left p-4 font-medium" style={{ color: colors.text.primary }}>Status</th>
+                  <th className="text-right p-4 font-medium" style={{ color: colors.text.primary }}>Rate/Hr</th>
+                  <th className="text-right p-4 font-medium" style={{ color: colors.text.primary }}>Regular</th>
+                  <th className="text-right p-4 font-medium" style={{ color: colors.text.primary }}>Overtime</th>
+                  <th className="text-right p-4 font-medium" style={{ color: colors.text.primary }}>Total Pay</th>
+                </tr>
+              </thead>
+              <tbody>
+                {summaries.map((summary) => (
+                  <tr key={summary.employee.id} className="border-t hover:bg-gray-50">
+                    <td className="p-4">
+                      <p className="font-medium" style={{ color: colors.text.primary }}>
+                        {summary.employee.name}
+                      </p>
+                      <p className="text-sm" style={{ color: colors.text.secondary }}>
+                        {summary.employee.email}
+                      </p>
+                    </td>
+                    <td className="p-4">
+                      <div className="flex items-center gap-2">
+                        {isEmployeeClockedIn(summary.employee.id) ? (
+                          <><CheckCircle size={16} color={colors.success} /> <span className="text-sm text-green-600">Clocked In</span></>
+                        ) : (
+                          <><div className="w-4 h-4 rounded-full bg-gray-300" /> <span className="text-sm text-gray-500">Clocked Out</span></>
+                        )}
+                      </div>
+                    </td>
+                    <td className="p-4 text-right font-medium" style={{ color: colors.admin }}>
+                      ${summary.employee.hourlyRate.toFixed(2)}
+                    </td>
+                    <td className="p-4 text-right" style={{ color: colors.text.primary }}>
+                      {summary.regularHours.toFixed(1)}h
+                    </td>
+                    <td className="p-4 text-right">
+                      <span style={{ color: summary.overtimeHours > 0 ? colors.warning : colors.text.primary }}>
+                        {summary.overtimeHours.toFixed(1)}h
+                      </span>
+                    </td>
+                    <td className="p-4 text-right font-bold" style={{ color: colors.success }}>
+                      ${summary.totalPay?.toFixed(2) || '0.00'}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Employee Time Clock View
+  const EmployeeTimeClockView = () => {
+    const employeeId = userRole === 'employee' ? currentUser.id : null;
+    const summary = employeeId ? getEmployeeSummary(employeeId, false) : null;
+    const isClockedIn = employeeId ? isEmployeeClockedIn(employeeId) : false;
+
+    if (!summary) return <div>Loading...</div>;
+
+    return (
+      <div className="p-6 max-w-2xl mx-auto">
+        <div className="text-center mb-8">
+          <h1 className="text-2xl font-bold" style={{ color: colors.text.primary }}>
+            Time Clock
+          </h1>
+          <div className="flex items-center justify-center gap-2 mt-2">
+            <User size={16} style={{ color: colors.employee }} />
+            <span className="text-sm" style={{ color: colors.employee }}>
+              Employee View - {currentUser.name}
+            </span>
+          </div>
+        </div>
+
+        {/* Main Clock Interface */}
+        <div className="bg-white rounded-2xl shadow-lg p-8 mb-6">
+          <div className="text-center mb-8">
+            <div className="w-24 h-24 mx-auto rounded-full flex items-center justify-center text-white font-bold text-2xl mb-4"
+                 style={{ backgroundColor: isClockedIn ? colors.success : colors.employee }}>
+              <Clock size={48} />
+            </div>
+            <p className="text-lg font-semibold" style={{ color: colors.text.primary }}>
+              {new Date().toLocaleTimeString('en-US', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                second: '2-digit',
+                hour12: true 
+              })}
+            </p>
+            <p className="text-sm" style={{ color: colors.text.secondary }}>
+              {new Date().toLocaleDateString('en-US', { 
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long', 
+                day: 'numeric' 
+              })}
+            </p>
+          </div>
+
+          <div className="text-center mb-6">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium"
+                 style={{ 
+                   backgroundColor: isClockedIn ? '#D1FAE5' : '#F3F4F6',
+                   color: isClockedIn ? colors.success : colors.text.secondary
+                 }}>
+              <div className={`w-2 h-2 rounded-full ${isClockedIn ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`} />
+              {isClockedIn ? 'Currently Clocked In' : 'Currently Clocked Out'}
+            </div>
+          </div>
+
+          <button
+            onClick={() => isClockedIn ? clockOut(employeeId) : clockIn(employeeId)}
+            className="w-full py-4 px-6 rounded-xl font-bold text-lg text-white transition-all duration-200 hover:opacity-90 active:scale-95"
+            style={{ backgroundColor: isClockedIn ? colors.danger : colors.success }}
+          >
+            {isClockedIn ? 'Clock Out' : 'Clock In'}
+          </button>
+        </div>
+
+        {/* Hours Summary */}
+        <div className="bg-white rounded-xl shadow-sm border p-6">
+          <h3 className="text-lg font-semibold mb-4" style={{ color: colors.text.primary }}>
+            This Pay Period Summary
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="text-center p-4 rounded-lg" style={{ backgroundColor: colors.background }}>
+              <p className="text-2xl font-bold" style={{ color: colors.employee }}>
+                {summary.regularHours.toFixed(1)}
+              </p>
+              <p className="text-sm" style={{ color: colors.text.secondary }}>Regular Hours</p>
+            </div>
+            <div className="text-center p-4 rounded-lg" style={{ backgroundColor: colors.background }}>
+              <p className="text-2xl font-bold" style={{ color: colors.warning }
 
         /* Login Screen Styles */
         .login-container {
@@ -936,668 +1599,6 @@
             const adminLogin = document.getElementById('adminLogin');
             const loginBtn = document.
 
-import React, { useState, useEffect, useMemo } from 'react';
-import { Clock, Users, Calendar, FileText, Plus, Edit2, Trash2, Download, CheckCircle, AlertCircle, Shield, User, LogOut, Eye, EyeOff } from 'lucide-react';
 
-const SecureTimesheetSystem = () => {
-  // Authentication state
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
-  const [userRole, setUserRole] = useState(null); // 'admin' or 'employee'
-  const [loginForm, setLoginForm] = useState({
-    role: 'employee',
-    password: '',
-    selectedEmployeeId: null
-  });
-  const [showPassword, setShowPassword] = useState(false);
-  const [loginError, setLoginError] = useState('');
-
-  // Sample data
-  const [employees, setEmployees] = useState([
-    { 
-      id: 1, 
-      name: 'John Doe', 
-      hourlyRate: 25.00,
-      email: 'john.doe@company.com',
-      active: true
-    },
-    { 
-      id: 2, 
-      name: 'Jane Smith', 
-      hourlyRate: 30.00,
-      email: 'jane.smith@company.com',
-      active: true
-    },
-    { 
-      id: 3, 
-      name: 'Mike Johnson', 
-      hourlyRate: 22.00,
-      email: 'mike.johnson@company.com',
-      active: true
-    }
-  ]);
-
-  const [timeEntries, setTimeEntries] = useState([
-    { id: 1, employeeId: 1, clockIn: new Date('2025-08-01T09:00:00'), clockOut: new Date('2025-08-01T17:30:00') },
-    { id: 2, employeeId: 1, clockIn: new Date('2025-08-02T08:45:00'), clockOut: new Date('2025-08-02T18:15:00') },
-    { id: 3, employeeId: 2, clockIn: new Date('2025-08-01T09:30:00'), clockOut: new Date('2025-08-01T17:00:00') },
-    { id: 4, employeeId: 2, clockIn: new Date('2025-08-02T09:00:00'), clockOut: new Date('2025-08-02T19:00:00') },
-    { id: 5, employeeId: 3, clockIn: new Date('2025-08-01T08:00:00'), clockOut: new Date('2025-08-01T16:30:00') },
-    { id: 6, employeeId: 3, clockIn: new Date('2025-08-02T08:30:00'), clockOut: new Date('2025-08-02T17:45:00') }
-  ]);
-
-  const [activeView, setActiveView] = useState('dashboard');
-  const [currentPayPeriod, setCurrentPayPeriod] = useState(getCurrentPayPeriod());
-  const [showAddEmployee, setShowAddEmployee] = useState(false);
-  const [newEmployee, setNewEmployee] = useState({ name: '', hourlyRate: '', email: '' });
-
-  // Theme colors
-  const colors = {
-    primary: '#3B82F6',
-    secondary: '#93C5FD',
-    success: '#10B981',
-    warning: '#F59E0B',
-    danger: '#EF4444',
-    admin: '#7C3AED',
-    employee: '#059669',
-    background: '#F8FAFC',
-    card: '#FFFFFF',
-    text: {
-      primary: '#1F2937',
-      secondary: '#6B7280',
-      light: '#FFFFFF'
-    }
-  };
-
-  // Authentication functions
-  const handleLogin = () => {
-    setLoginError('');
-    
-    if (loginForm.role === 'admin') {
-      if (loginForm.password === 'admin123') {
-        setIsAuthenticated(true);
-        setUserRole('admin');
-        setCurrentUser({ id: 'admin', name: 'Administrator', role: 'admin' });
-        setActiveView('dashboard');
-      } else {
-        setLoginError('Invalid admin password');
-      }
-    } else {
-      if (loginForm.selectedEmployeeId) {
-        const employee = employees.find(emp => emp.id === parseInt(loginForm.selectedEmployeeId));
-        if (employee) {
-          setIsAuthenticated(true);
-          setUserRole('employee');
-          setCurrentUser({ ...employee, role: 'employee' });
-          setActiveView('timeclock');
-        } else {
-          setLoginError('Employee not found');
-        }
-      } else {
-        setLoginError('Please select an employee');
-      }
-    }
-  };
-
-  const handleLogout = () => {
-    setIsAuthenticated(false);
-    setCurrentUser(null);
-    setUserRole(null);
-    setLoginForm({ role: 'employee', password: '', selectedEmployeeId: null });
-    setLoginError('');
-    setActiveView('dashboard');
-  };
-
-  // Helper functions
-  function getCurrentPayPeriod() {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = now.getMonth();
-    const day = now.getDate();
-
-    if (day <= 15) {
-      return {
-        start: new Date(year, month, 1),
-        end: new Date(year, month, 15, 23, 59, 59)
-      };
-    } else {
-      return {
-        start: new Date(year, month, 16),
-        end: new Date(year, month + 1, 0, 23, 59, 59)
-      };
-    }
-  }
-
-  function calculateHours(clockIn, clockOut) {
-    const diff = clockOut - clockIn;
-    return diff / (1000 * 60 * 60);
-  }
-
-  function calculateOvertimeHours(totalHours, dailyHours) {
-    const dailyOvertime = Math.max(0, dailyHours - 8);
-    return dailyOvertime;
-  }
-
-  function formatTime(date) {
-    return date.toLocaleTimeString('en-US', { 
-      hour: '2-digit', 
-      minute: '2-digit',
-      hour12: true 
-    });
-  }
-
-  function formatDate(date) {
-    return date.toLocaleDateString('en-US', { 
-      weekday: 'short',
-      month: 'short', 
-      day: 'numeric' 
-    });
-  }
-
-  // Calculate employee summary for pay period
-  const getEmployeeSummary = (employeeId, includeFinancials = false) => {
-    const employee = employees.find(e => e.id === employeeId);
-    if (!employee) return null;
-
-    const entries = timeEntries.filter(entry => 
-      entry.employeeId === employeeId &&
-      entry.clockIn >= currentPayPeriod.start &&
-      entry.clockIn <= currentPayPeriod.end
-    );
-
-    let totalHours = 0;
-    let overtimeHours = 0;
-
-    entries.forEach(entry => {
-      if (entry.clockOut) {
-        const hours = calculateHours(entry.clockIn, entry.clockOut);
-        totalHours += hours;
-        overtimeHours += calculateOvertimeHours(hours, hours);
-      }
-    });
-
-    const regularHours = Math.max(0, totalHours - overtimeHours);
-    
-    const result = {
-      employee,
-      entries,
-      totalHours: Math.round(totalHours * 100) / 100,
-      regularHours: Math.round(regularHours * 100) / 100,
-      overtimeHours: Math.round(overtimeHours * 100) / 100
-    };
-
-    // Only include financial data for admin users
-    if (includeFinancials && userRole === 'admin') {
-      const regularPay = regularHours * employee.hourlyRate;
-      const overtimePay = overtimeHours * employee.hourlyRate * 1.5;
-      const totalPay = regularPay + overtimePay;
-
-      result.totalPay = Math.round(totalPay * 100) / 100;
-      result.regularPay = Math.round(regularPay * 100) / 100;
-      result.overtimePay = Math.round(overtimePay * 100) / 100;
-    }
-
-    return result;
-  };
-
-  // Clock in/out functions
-  const clockIn = (employeeId) => {
-    // Employees can only clock in for themselves
-    if (userRole === 'employee' && employeeId !== currentUser.id) return;
-    
-    const newEntry = {
-      id: Date.now(),
-      employeeId,
-      clockIn: new Date(),
-      clockOut: null
-    };
-    setTimeEntries([...timeEntries, newEntry]);
-  };
-
-  const clockOut = (employeeId) => {
-    // Employees can only clock out for themselves
-    if (userRole === 'employee' && employeeId !== currentUser.id) return;
-
-    const activeEntry = timeEntries.find(entry => 
-      entry.employeeId === employeeId && 
-      !entry.clockOut
-    );
-    
-    if (activeEntry) {
-      setTimeEntries(timeEntries.map(entry =>
-        entry.id === activeEntry.id
-          ? { ...entry, clockOut: new Date() }
-          : entry
-      ));
-    }
-  };
-
-  const isEmployeeClockedIn = (employeeId) => {
-    return timeEntries.some(entry => 
-      entry.employeeId === employeeId && 
-      !entry.clockOut
-    );
-  };
-
-  // Admin-only functions
-  const addEmployee = () => {
-    if (userRole !== 'admin') return;
-    
-    if (newEmployee.name && newEmployee.hourlyRate) {
-      const employee = {
-        id: Date.now(),
-        name: newEmployee.name,
-        hourlyRate: parseFloat(newEmployee.hourlyRate),
-        email: newEmployee.email,
-        active: true
-      };
-      setEmployees([...employees, employee]);
-      setNewEmployee({ name: '', hourlyRate: '', email: '' });
-      setShowAddEmployee(false);
-    }
-  };
-
-  const exportPayroll = () => {
-    if (userRole !== 'admin') return;
-    
-    const summaries = employees.map(emp => getEmployeeSummary(emp.id, true));
-    const csvContent = [
-      'Employee,Regular Hours,Overtime Hours,Total Hours,Regular Pay,Overtime Pay,Total Pay',
-      ...summaries.map(s => 
-        `${s.employee.name},${s.regularHours},${s.overtimeHours},${s.totalHours},$${s.regularPay || 0},$${s.overtimePay || 0},$${s.totalPay || 0}`
-      )
-    ].join('\n');
-    
-    const blob = new Blob([csvContent], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `payroll_${currentPayPeriod.start.toISOString().split('T')[0]}.csv`;
-    a.click();
-  };
-
-  // Login Screen Component
-  const LoginScreen = () => (
-    <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: colors.background }}>
-      <div className="w-full max-w-md p-8 rounded-2xl shadow-lg bg-white">
-        <div className="text-center mb-8">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" 
-               style={{ backgroundColor: colors.primary }}>
-            <Clock size={32} color="white" />
-          </div>
-          <h1 className="text-2xl font-bold" style={{ color: colors.text.primary }}>
-            Timesheet System
-          </h1>
-          <p className="text-sm mt-2" style={{ color: colors.text.secondary }}>
-            Please select your role to continue
-          </p>
-        </div>
-
-        {/* Role Selection */}
-        <div className="mb-6">
-          <div className="flex gap-2 p-1 rounded-xl" style={{ backgroundColor: colors.background }}>
-            <button
-              onClick={() => setLoginForm({...loginForm, role: 'employee', password: '', selectedEmployeeId: null})}
-              className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all duration-200 ${
-                loginForm.role === 'employee' ? 'text-white shadow-md' : 'text-gray-600'
-              }`}
-              style={{ backgroundColor: loginForm.role === 'employee' ? colors.employee : 'transparent' }}
-            >
-              <User size={18} className="inline mr-2" />
-              Employee
-            </button>
-            <button
-              onClick={() => setLoginForm({...loginForm, role: 'admin', password: '', selectedEmployeeId: null})}
-              className={`flex-1 py-3 px-4 rounded-lg font-medium transition-all duration-200 ${
-                loginForm.role === 'admin' ? 'text-white shadow-md' : 'text-gray-600'
-              }`}
-              style={{ backgroundColor: loginForm.role === 'admin' ? colors.admin : 'transparent' }}
-            >
-              <Shield size={18} className="inline mr-2" />
-              Admin
-            </button>
-          </div>
-        </div>
-
-        {/* Login Form */}
-        <div className="space-y-4">
-          {loginForm.role === 'admin' ? (
-            <div>
-              <label className="block text-sm font-medium mb-2" style={{ color: colors.text.primary }}>
-                Admin Password
-              </label>
-              <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  value={loginForm.password}
-                  onChange={(e) => setLoginForm({...loginForm, password: e.target.value})}
-                  onKeyPress={(e) => e.key === 'Enter' && handleLogin()}
-                  placeholder="Enter admin password"
-                  className="w-full px-4 py-3 pr-12 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 transition-all duration-200"
-                  style={{ focusRingColor: colors.admin }}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-              <p className="text-xs mt-1" style={{ color: colors.text.secondary }}>
-                Hint: admin123
-              </p>
-            </div>
-          ) : (
-            <div>
-              <label className="block text-sm font-medium mb-2" style={{ color: colors.text.primary }}>
-                Select Your Name
-              </label>
-              <select
-                value={loginForm.selectedEmployeeId || ''}
-                onChange={(e) => setLoginForm({...loginForm, selectedEmployeeId: e.target.value})}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 transition-all duration-200"
-                style={{ focusRingColor: colors.employee }}
-              >
-                <option value="">Choose your name...</option>
-                {employees.filter(emp => emp.active).map(emp => (
-                  <option key={emp.id} value={emp.id}>{emp.name}</option>
-                ))}
-              </select>
-            </div>
-          )}
-
-          {loginError && (
-            <div className="p-3 rounded-lg text-sm" style={{ backgroundColor: '#FEF2F2', color: colors.danger }}>
-              {loginError}
-            </div>
-          )}
-
-          <button
-            onClick={handleLogin}
-            className="w-full py-3 px-4 rounded-xl font-medium text-white transition-all duration-200 hover:opacity-90 active:scale-95"
-            style={{ 
-              backgroundColor: loginForm.role === 'admin' ? colors.admin : colors.employee
-            }}
-          >
-            Sign In
-          </button>
-        </div>
-
-        <div className="mt-6 pt-6 border-t text-center">
-          <p className="text-xs" style={{ color: colors.text.secondary }}>
-            {loginForm.role === 'admin' 
-              ? 'Admin access includes employee management, payroll, and financial data' 
-              : 'Employee access includes personal time tracking only'
-            }
-          </p>
-        </div>
-      </div>
-    </div>
-  );
-
-  // Header Component with role indicator
-  const Header = () => (
-    <div className="flex justify-between items-center p-4 border-b bg-white shadow-sm">
-      <div className="flex items-center gap-3">
-        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white`}
-             style={{ backgroundColor: userRole === 'admin' ? colors.admin : colors.employee }}>
-          {userRole === 'admin' ? <Shield size={18} /> : <User size={18} />}
-        </div>
-        <div>
-          <p className="font-semibold" style={{ color: colors.text.primary }}>
-            {currentUser.name}
-          </p>
-          <p className="text-xs" style={{ color: colors.text.secondary }}>
-            {userRole === 'admin' ? 'Administrator' : 'Employee'} • Pay Period: {formatDate(currentPayPeriod.start)} - {formatDate(currentPayPeriod.end)}
-          </p>
-        </div>
-      </div>
-      <button
-        onClick={handleLogout}
-        className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-all duration-200"
-      >
-        <LogOut size={18} />
-        Sign Out
-      </button>
-    </div>
-  );
-
-  // Navigation component with role-based access
-  const Navigation = () => {
-    const adminNavItems = [
-      { id: 'dashboard', label: 'Dashboard', icon: Users },
-      { id: 'timeclock', label: 'Time Clock', icon: Clock },
-      { id: 'employees', label: 'Employees', icon: Users },
-      { id: 'reports', label: 'Reports', icon: FileText }
-    ];
-
-    const employeeNavItems = [
-      { id: 'timeclock', label: 'Time Clock', icon: Clock },
-      { id: 'timesheet', label: 'My Timesheet', icon: Calendar }
-    ];
-
-    const navItems = userRole === 'admin' ? adminNavItems : employeeNavItems;
-
-    return (
-      <div className="flex flex-wrap gap-2 p-4 border-b bg-white">
-        {navItems.map(({ id, label, icon: Icon }) => (
-          <button
-            key={id}
-            onClick={() => setActiveView(id)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-200 ${
-              activeView === id 
-                ? 'text-white shadow-md' 
-                : 'text-gray-600 hover:bg-gray-100'
-            }`}
-            style={{ 
-              backgroundColor: activeView === id ? (userRole === 'admin' ? colors.admin : colors.employee) : 'transparent'
-            }}
-          >
-            <Icon size={18} />
-            {label}
-          </button>
-        ))}
-      </div>
-    );
-  };
-
-  // Admin Dashboard View
-  const AdminDashboardView = () => {
-    const summaries = employees.map(emp => getEmployeeSummary(emp.id, true));
-    const totals = summaries.reduce((acc, summary) => ({
-      totalHours: acc.totalHours + summary.totalHours,
-      regularHours: acc.regularHours + summary.regularHours,
-      overtimeHours: acc.overtimeHours + summary.overtimeHours,
-      totalPay: acc.totalPay + (summary.totalPay || 0)
-    }), { totalHours: 0, regularHours: 0, overtimeHours: 0, totalPay: 0 });
-
-    return (
-      <div className="p-6">
-        <div className="flex justify-between items-center mb-6">
-          <div>
-            <h1 className="text-2xl font-bold" style={{ color: colors.text.primary }}>
-              Admin Dashboard
-            </h1>
-            <div className="flex items-center gap-2 mt-1">
-              <Shield size={16} style={{ color: colors.admin }} />
-              <span className="text-sm" style={{ color: colors.admin }}>
-                Full Access Mode
-              </span>
-            </div>
-          </div>
-          <button
-            onClick={exportPayroll}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg font-medium text-white transition-all duration-200 hover:opacity-90"
-            style={{ backgroundColor: colors.success }}
-          >
-            <Download size={18} />
-            Export Payroll
-          </button>
-        </div>
-
-        {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          {[
-            { label: 'Total Hours', value: totals.totalHours.toFixed(1), color: colors.primary },
-            { label: 'Regular Hours', value: totals.regularHours.toFixed(1), color: colors.success },
-            { label: 'Overtime Hours', value: totals.overtimeHours.toFixed(1), color: colors.warning },
-            { label: 'Total Pay', value: `$${totals.totalPay.toFixed(2)}`, color: colors.admin }
-          ].map((stat, index) => (
-            <div key={index} className="p-4 rounded-xl bg-white shadow-sm border">
-              <p className="text-sm font-medium" style={{ color: colors.text.secondary }}>
-                {stat.label}
-              </p>
-              <p className="text-2xl font-bold mt-1" style={{ color: stat.color }}>
-                {stat.value}
-              </p>
-            </div>
-          ))}
-        </div>
-
-        {/* Employee Summary Table */}
-        <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
-          <div className="p-4 border-b">
-            <h2 className="text-lg font-semibold" style={{ color: colors.text.primary }}>
-              Employee Summary
-            </h2>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead style={{ backgroundColor: colors.background }}>
-                <tr>
-                  <th className="text-left p-4 font-medium" style={{ color: colors.text.primary }}>Employee</th>
-                  <th className="text-left p-4 font-medium" style={{ color: colors.text.primary }}>Status</th>
-                  <th className="text-right p-4 font-medium" style={{ color: colors.text.primary }}>Rate/Hr</th>
-                  <th className="text-right p-4 font-medium" style={{ color: colors.text.primary }}>Regular</th>
-                  <th className="text-right p-4 font-medium" style={{ color: colors.text.primary }}>Overtime</th>
-                  <th className="text-right p-4 font-medium" style={{ color: colors.text.primary }}>Total Pay</th>
-                </tr>
-              </thead>
-              <tbody>
-                {summaries.map((summary) => (
-                  <tr key={summary.employee.id} className="border-t hover:bg-gray-50">
-                    <td className="p-4">
-                      <p className="font-medium" style={{ color: colors.text.primary }}>
-                        {summary.employee.name}
-                      </p>
-                      <p className="text-sm" style={{ color: colors.text.secondary }}>
-                        {summary.employee.email}
-                      </p>
-                    </td>
-                    <td className="p-4">
-                      <div className="flex items-center gap-2">
-                        {isEmployeeClockedIn(summary.employee.id) ? (
-                          <><CheckCircle size={16} color={colors.success} /> <span className="text-sm text-green-600">Clocked In</span></>
-                        ) : (
-                          <><div className="w-4 h-4 rounded-full bg-gray-300" /> <span className="text-sm text-gray-500">Clocked Out</span></>
-                        )}
-                      </div>
-                    </td>
-                    <td className="p-4 text-right font-medium" style={{ color: colors.admin }}>
-                      ${summary.employee.hourlyRate.toFixed(2)}
-                    </td>
-                    <td className="p-4 text-right" style={{ color: colors.text.primary }}>
-                      {summary.regularHours.toFixed(1)}h
-                    </td>
-                    <td className="p-4 text-right">
-                      <span style={{ color: summary.overtimeHours > 0 ? colors.warning : colors.text.primary }}>
-                        {summary.overtimeHours.toFixed(1)}h
-                      </span>
-                    </td>
-                    <td className="p-4 text-right font-bold" style={{ color: colors.success }}>
-                      ${summary.totalPay?.toFixed(2) || '0.00'}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  // Employee Time Clock View
-  const EmployeeTimeClockView = () => {
-    const employeeId = userRole === 'employee' ? currentUser.id : null;
-    const summary = employeeId ? getEmployeeSummary(employeeId, false) : null;
-    const isClockedIn = employeeId ? isEmployeeClockedIn(employeeId) : false;
-
-    if (!summary) return <div>Loading...</div>;
-
-    return (
-      <div className="p-6 max-w-2xl mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold" style={{ color: colors.text.primary }}>
-            Time Clock
-          </h1>
-          <div className="flex items-center justify-center gap-2 mt-2">
-            <User size={16} style={{ color: colors.employee }} />
-            <span className="text-sm" style={{ color: colors.employee }}>
-              Employee View - {currentUser.name}
-            </span>
-          </div>
-        </div>
-
-        {/* Main Clock Interface */}
-        <div className="bg-white rounded-2xl shadow-lg p-8 mb-6">
-          <div className="text-center mb-8">
-            <div className="w-24 h-24 mx-auto rounded-full flex items-center justify-center text-white font-bold text-2xl mb-4"
-                 style={{ backgroundColor: isClockedIn ? colors.success : colors.employee }}>
-              <Clock size={48} />
-            </div>
-            <p className="text-lg font-semibold" style={{ color: colors.text.primary }}>
-              {new Date().toLocaleTimeString('en-US', { 
-                hour: '2-digit', 
-                minute: '2-digit',
-                second: '2-digit',
-                hour12: true 
-              })}
-            </p>
-            <p className="text-sm" style={{ color: colors.text.secondary }}>
-              {new Date().toLocaleDateString('en-US', { 
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long', 
-                day: 'numeric' 
-              })}
-            </p>
-          </div>
-
-          <div className="text-center mb-6">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium"
-                 style={{ 
-                   backgroundColor: isClockedIn ? '#D1FAE5' : '#F3F4F6',
-                   color: isClockedIn ? colors.success : colors.text.secondary
-                 }}>
-              <div className={`w-2 h-2 rounded-full ${isClockedIn ? 'bg-green-500 animate-pulse' : 'bg-gray-400'}`} />
-              {isClockedIn ? 'Currently Clocked In' : 'Currently Clocked Out'}
-            </div>
-          </div>
-
-          <button
-            onClick={() => isClockedIn ? clockOut(employeeId) : clockIn(employeeId)}
-            className="w-full py-4 px-6 rounded-xl font-bold text-lg text-white transition-all duration-200 hover:opacity-90 active:scale-95"
-            style={{ backgroundColor: isClockedIn ? colors.danger : colors.success }}
-          >
-            {isClockedIn ? 'Clock Out' : 'Clock In'}
-          </button>
-        </div>
-
-        {/* Hours Summary */}
-        <div className="bg-white rounded-xl shadow-sm border p-6">
-          <h3 className="text-lg font-semibold mb-4" style={{ color: colors.text.primary }}>
-            This Pay Period Summary
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="text-center p-4 rounded-lg" style={{ backgroundColor: colors.background }}>
-              <p className="text-2xl font-bold" style={{ color: colors.employee }}>
-                {summary.regularHours.toFixed(1)}
-              </p>
-              <p className="text-sm" style={{ color: colors.text.secondary }}>Regular Hours</p>
-            </div>
-            <div className="text-center p-4 rounded-lg" style={{ backgroundColor: colors.background }}>
-              <p className="text-2xl font-bold" style={{ color: colors.warning }
 
 
