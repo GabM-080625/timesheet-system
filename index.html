@@ -12,157 +12,145 @@
             box-sizing: border-box;
         }
 
-        :root {
-            --primary: #3B82F6;
-            --secondary: #93C5FD;
-            --success: #10B981;
-            --warning: #F59E0B;
-            --danger: #EF4444;
-            --admin: #7C3AED;
-            --employee: #059669;
-            --background: #F8FAFC;
-            --card: #FFFFFF;
-            --text-primary: #1F2937;
-            --text-secondary: #6B7280;
-            --text-light: #FFFFFF;
-            --border: #E5E7EB;
-        }
-
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: var(--background);
-            color: var(--text-primary);
-            line-height: 1.6;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
         }
 
         .container {
-            min-height: 100vh;
-            transition: all 0.3s ease;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
         }
 
         /* Login Screen Styles */
-        .login-container {
-            min-height: 100vh;
+        .login-screen {
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, var(--primary), var(--admin));
+            min-height: 100vh;
+            padding: 20px;
         }
 
         .login-card {
-            width: 100%;
-            max-width: 450px;
-            padding: 2rem;
             background: white;
-            border-radius: 1rem;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-            margin: 1rem;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
         }
 
         .login-header {
-            text-align: center;
             margin-bottom: 2rem;
         }
 
-        .login-icon {
-            width: 4rem;
-            height: 4rem;
-            background: var(--primary);
+        .logo {
+            width: 60px;
+            height: 60px;
+            background: #667eea;
             border-radius: 50%;
+            margin: 0 auto 1rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 1rem;
             color: white;
-            font-size: 1.5rem;
+            font-size: 24px;
         }
 
-        .role-selector {
+        .role-toggle {
             display: flex;
-            background: var(--background);
-            border-radius: 0.75rem;
-            padding: 0.25rem;
-            margin-bottom: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 2rem;
         }
 
         .role-btn {
             flex: 1;
-            padding: 0.75rem;
+            padding: 12px;
             border: none;
-            border-radius: 0.5rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
+            border-radius: 8px;
             background: transparent;
-            color: var(--text-secondary);
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
         }
 
         .role-btn.active {
-            background: var(--employee);
+            background: #667eea;
             color: white;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
         }
 
-        .role-btn.admin.active {
-            background: var(--admin);
+        .admin-active {
+            background: #7c3aed !important;
+            box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3) !important;
         }
 
         .form-group {
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
+            text-align: left;
         }
 
         .form-label {
             display: block;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-            color: var(--text-primary);
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
         }
 
-        .form-input {
+        .form-input, .form-select {
             width: 100%;
-            padding: 0.75rem;
-            border: 1px solid var(--border);
-            border-radius: 0.5rem;
-            font-size: 1rem;
-            transition: all 0.2s ease;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
         }
 
-        .form-input:focus {
+        .form-input:focus, .form-select:focus {
             outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            border-color: #667eea;
         }
 
-        .password-input {
+        .password-group {
             position: relative;
         }
 
         .password-toggle {
             position: absolute;
-            right: 0.75rem;
+            right: 12px;
             top: 50%;
             transform: translateY(-50%);
             background: none;
             border: none;
             cursor: pointer;
-            color: var(--text-secondary);
+            color: #6b7280;
         }
 
         .login-btn {
             width: 100%;
-            padding: 0.75rem;
-            background: var(--employee);
-            color: white;
+            padding: 12px;
             border: none;
-            border-radius: 0.5rem;
+            border-radius: 8px;
+            font-size: 16px;
             font-weight: 600;
-            font-size: 1rem;
+            color: white;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.3s ease;
+            margin-bottom: 1rem;
+        }
+
+        .login-btn.employee {
+            background: #059669;
         }
 
         .login-btn.admin {
-            background: var(--admin);
+            background: #7c3aed;
         }
 
         .login-btn:hover {
@@ -171,109 +159,106 @@
         }
 
         .error-message {
-            background: #FEF2F2;
-            color: var(--danger);
-            padding: 0.75rem;
-            border-radius: 0.5rem;
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 12px;
+            border-radius: 8px;
             margin-bottom: 1rem;
-            font-size: 0.875rem;
+            font-size: 14px;
         }
 
         .hint-text {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-            margin-top: 0.25rem;
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        .hidden {
+            display: none !important;
         }
 
         /* Main App Styles */
+        .main-app {
+            background: #f8fafc;
+            min-height: 100vh;
+        }
+
         .header {
             background: white;
-            border-bottom: 1px solid var(--border);
-            padding: 1rem;
+            padding: 1rem 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
             display: flex;
-            justify-content: space-between;
+            justify-content: between;
             align-items: center;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            flex-wrap: wrap;
+            gap: 1rem;
         }
 
         .user-info {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 12px;
         }
 
         .user-avatar {
-            width: 2.5rem;
-            height: 2.5rem;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-weight: 600;
-            font-size: 0.875rem;
+            font-weight: bold;
         }
 
         .logout-btn {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            background: none;
-            border: 1px solid var(--border);
-            border-radius: 0.5rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            color: var(--text-secondary);
-        }
-
-        .logout-btn:hover {
-            background: var(--background);
-        }
-
-        .navigation {
-            background: white;
-            border-bottom: 1px solid var(--border);
-            padding: 1rem;
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-
-        .nav-btn {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            background: none;
-            border: none;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.2s ease;
-            color: var(--text-secondary);
-        }
-
-        .nav-btn.active {
-            background: var(--employee);
+            background: #ef4444;
             color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .nav-btn.admin.active {
-            background: var(--admin);
+        .nav-tabs {
+            background: white;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            gap: 2rem;
+            overflow-x: auto;
         }
 
-        .nav-btn:hover:not(.active) {
-            background: var(--background);
+        .nav-tab {
+            padding: 8px 16px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            font-weight: 600;
+            color: #6b7280;
+            white-space: nowrap;
         }
 
-        .main-content {
-            padding: 1.5rem;
-            max-width: 1200px;
-            margin: 0 auto;
+        .nav-tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
         }
 
-        .page-header {
+        .nav-tab.admin.active {
+            color: #7c3aed;
+            border-bottom-color: #7c3aed;
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        /* Dashboard Styles */
+        .dashboard-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -282,56 +267,45 @@
             gap: 1rem;
         }
 
-        .page-title {
-            font-size: 1.875rem;
-            font-weight: bold;
-            color: var(--text-primary);
-        }
-
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
             margin-bottom: 2rem;
         }
 
         .stat-card {
             background: white;
             padding: 1.5rem;
-            border-radius: 0.75rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            border: 1px solid var(--border);
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
         .stat-label {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            margin-bottom: 0.5rem;
-            font-weight: 500;
+            color: #6b7280;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
         }
 
         .stat-value {
-            font-size: 1.875rem;
+            font-size: 24px;
             font-weight: bold;
+            color: #1f2937;
         }
 
-        .card {
+        .employee-table {
             background: white;
-            border-radius: 0.75rem;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            border: 1px solid var(--border);
+            border-radius: 12px;
             overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
-        .card-header {
-            padding: 1rem;
-            border-bottom: 1px solid var(--border);
+        .table-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
             font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .card-content {
-            padding: 1rem;
+            color: #1f2937;
         }
 
         .table {
@@ -339,205 +313,150 @@
             border-collapse: collapse;
         }
 
-        .table th {
-            background: var(--background);
-            padding: 0.75rem;
+        .table th, .table td {
+            padding: 1rem;
             text-align: left;
-            font-weight: 500;
-            color: var(--text-primary);
-            font-size: 0.875rem;
+            border-bottom: 1px solid #e5e7eb;
         }
 
-        .table td {
-            padding: 0.75rem;
-            border-top: 1px solid var(--border);
+        .table th {
+            background: #f9fafb;
+            font-weight: 600;
+            color: #374151;
         }
 
         .table tr:hover {
-            background: #F9FAFB;
+            background: #f9fafb;
         }
 
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 0.5rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-decoration: none;
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
         }
 
-        .btn-primary {
-            background: var(--primary);
-            color: white;
+        .status-clocked-in {
+            background: #d1fae5;
+            color: #065f46;
         }
 
-        .btn-success {
-            background: var(--success);
-            color: white;
+        .status-clocked-out {
+            background: #f3f4f6;
+            color: #374151;
         }
 
-        .btn-danger {
-            background: var(--danger);
-            color: white;
-        }
-
-        .btn-admin {
-            background: var(--admin);
-            color: white;
-        }
-
-        .btn:hover {
-            opacity: 0.9;
-            transform: translateY(-1px);
-        }
-
-        .btn-small {
-            padding: 0.25rem 0.5rem;
-            font-size: 0.75rem;
-        }
-
-        /* Clock Interface */
-        .clock-container {
+        /* Time Clock Styles */
+        .time-clock {
             max-width: 600px;
             margin: 0 auto;
         }
 
         .clock-card {
             background: white;
+            border-radius: 20px;
             padding: 3rem;
-            border-radius: 1rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
             margin-bottom: 2rem;
         }
 
-        .clock-icon {
-            width: 6rem;
-            height: 6rem;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 2rem;
-            color: white;
+        .current-time {
             font-size: 3rem;
-            background: var(--employee);
-        }
-
-        .clock-icon.clocked-in {
-            background: var(--success);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-
-        .clock-time {
-            font-size: 2rem;
             font-weight: bold;
-            color: var(--text-primary);
+            color: #1f2937;
             margin-bottom: 0.5rem;
         }
 
-        .clock-date {
-            color: var(--text-secondary);
+        .current-date {
+            color: #6b7280;
             margin-bottom: 2rem;
         }
 
         .clock-status {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            border-radius: 1rem;
-            font-size: 0.875rem;
-            font-weight: 500;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-weight: 600;
             margin-bottom: 2rem;
+            display: inline-block;
         }
 
-        .clock-status.clocked-in {
-            background: #D1FAE5;
-            color: var(--success);
+        .status-in {
+            background: #d1fae5;
+            color: #065f46;
         }
 
-        .clock-status.clocked-out {
-            background: var(--background);
-            color: var(--text-secondary);
+        .status-out {
+            background: #f3f4f6;
+            color: #374151;
         }
 
         .clock-btn {
-            width: 100%;
-            padding: 1rem 2rem;
-            font-size: 1.125rem;
-            font-weight: bold;
+            padding: 1rem 3rem;
             border: none;
-            border-radius: 0.75rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
             color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
 
         .clock-btn.clock-in {
-            background: var(--success);
+            background: #059669;
         }
 
         .clock-btn.clock-out {
-            background: var(--danger);
+            background: #dc2626;
         }
 
         .clock-btn:hover {
             opacity: 0.9;
-            transform: scale(1.02);
+            transform: translateY(-2px);
         }
 
-        /* Status indicators */
-        .status-indicator {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.875rem;
+        .hours-summary {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
-        .status-dot {
-            width: 0.5rem;
-            height: 0.5rem;
-            border-radius: 50%;
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
         }
 
-        .status-dot.success {
-            background: var(--success);
-            animation: pulse 2s infinite;
+        .summary-item {
+            text-align: center;
+            padding: 1rem;
+            background: #f9fafb;
+            border-radius: 8px;
         }
 
-        .status-dot.inactive {
-            background: var(--text-secondary);
+        .summary-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #1f2937;
         }
 
-        .badge {
-            display: inline-block;
-            padding: 0.25rem 0.5rem;
-            font-size: 0.75rem;
-            font-weight: 500;
-            border-radius: 1rem;
+        .summary-label {
+            color: #6b7280;
+            font-size: 14px;
+            margin-top: 4px;
         }
 
-        .badge-success {
-            background: #D1FAE5;
-            color: var(--success);
+        /* Employee Management Styles */
+        .add-employee-form {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
 
-        .badge-secondary {
-            background: var(--background);
-            color: var(--text-secondary);
-        }
-
-        /* Form styles */
         .form-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -545,60 +464,77 @@
             margin-bottom: 1rem;
         }
 
-        .form-actions {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        /* Responsive design */
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-success {
+            background: #059669;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        /* Responsive Design */
         @media (max-width: 768px) {
+            .container, .content {
+                padding: 1rem;
+            }
+            
             .header {
+                padding: 1rem;
+            }
+            
+            .nav-tabs {
+                padding: 1rem;
+            }
+            
+            .dashboard-header {
                 flex-direction: column;
-                gap: 1rem;
                 align-items: stretch;
             }
-
-            .page-header {
-                flex-direction: column;
-                align-items: stretch;
+            
+            .current-time {
+                font-size: 2rem;
             }
-
-            .navigation {
-                justify-content: center;
-            }
-
-            .nav-btn {
-                flex: 1;
-                justify-content: center;
-                min-width: 120px;
-            }
-
-            .stats-grid {
-                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            }
-
-            .form-actions {
-                flex-direction: column;
-            }
-
-            .btn {
-                width: 100%;
-                justify-content: center;
-            }
-
-            .table-container {
-                overflow-x: auto;
-            }
-
+            
             .clock-card {
                 padding: 2rem 1rem;
             }
+            
+            .table {
+                font-size: 14px;
+            }
+            
+            .table th, .table td {
+                padding: 0.5rem;
+            }
         }
 
-        /* Animations */
-        .fade-in {
-            animation: fadeIn 0.3s ease-in-out;
+        /* Animation for smooth transitions */
+        .tab-content {
+            animation: fadeIn 0.3s ease;
         }
 
         @keyframes fadeIn {
@@ -606,401 +542,884 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .hidden {
-            display: none;
+        .pulse {
+            animation: pulse 2s infinite;
         }
 
-        /* Loading states */
-        .loading {
-            text-align: center;
-            padding: 2rem;
-            color: var(--text-secondary);
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
-
-        /* Utility classes */
-        .text-center { text-align: center; }
-        .text-right { text-align: right; }
-        .text-success { color: var(--success); }
-        .text-warning { color: var(--warning); }
-        .text-danger { color: var(--danger); }
-        .text-admin { color: var(--admin); }
-        .font-bold { font-weight: bold; }
-        .mb-4 { margin-bottom: 1rem; }
-        .mt-4 { margin-top: 1rem; }
-        .ml-2 { margin-left: 0.5rem; }
     </style>
 </head>
 <body>
-    <div id="app" class="container">
-        <!-- Login Screen -->
-        <div id="loginScreen" class="login-container">
-            <div class="login-card fade-in">
-                <div class="login-header">
-                    <div class="login-icon">🕒</div>
-                    <h1>Timesheet System</h1>
-                    <p class="text-secondary">Please select your role to continue</p>
-                </div>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-screen">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="logo">⏰</div>
+                <h1>Timesheet System</h1>
+                <p>Please select your role to continue</p>
+            </div>
+            
+            <div class="role-toggle">
+                <button id="employeeRoleBtn" class="role-btn active">👤 Employee</button>
+                <button id="adminRoleBtn" class="role-btn">🛡️ Admin</button>
+            </div>
 
-                <div class="role-selector">
-                    <button class="role-btn active" onclick="selectRole('employee')">
-                        👤 Employee
-                    </button>
-                    <button class="role-btn admin" onclick="selectRole('admin')">
-                        🛡️ Admin
-                    </button>
+            <!-- Employee Login Form -->
+            <div id="employeeForm">
+                <div class="form-group">
+                    <label class="form-label">Select Your Name</label>
+                    <select id="employeeSelect" class="form-select">
+                        <option value="">Choose your name...</option>
+                    </select>
                 </div>
+                <button id="employeeLoginBtn" class="login-btn employee">Sign In</button>
+            </div>
 
-                <div id="employeeLogin">
-                    <div class="form-group">
-                        <label class="form-label">Select Your Name</label>
-                        <select id="employeeSelect" class="form-input">
-                            <option value="">Choose your name...</option>
-                        </select>
+            <!-- Admin Login Form -->
+            <div id="adminForm" class="hidden">
+                <div class="form-group">
+                    <label class="form-label">Admin Password</label>
+                    <div class="password-group">
+                        <input id="adminPassword" type="password" class="form-input" placeholder="Enter admin password">
+                        <button type="button" id="togglePassword" class="password-toggle">👁️</button>
                     </div>
+                    <div class="hint-text">Hint: admin123</div>
                 </div>
+                <button id="adminLoginBtn" class="login-btn admin">Sign In as Admin</button>
+            </div>
 
-                <div id="adminLogin" class="hidden">
-                    <div class="form-group">
-                        <label class="form-label">Admin Password</label>
-                        <div class="password-input">
-                            <input type="password" id="adminPassword" class="form-input" placeholder="Enter admin password">
-                            <button type="button" class="password-toggle" onclick="togglePassword()">👁️</button>
-                        </div>
-                        <p class="hint-text">Hint: admin123</p>
-                    </div>
+            <div id="loginError" class="error-message hidden"></div>
+            
+            <div class="hint-text">
+                <span id="roleHint">Employee access includes personal time tracking only</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="mainApp" class="main-app hidden">
+        <div class="header">
+            <div class="user-info">
+                <div id="userAvatar" class="user-avatar"></div>
+                <div>
+                    <div id="userName" style="font-weight: 600;"></div>
+                    <div id="userRole" style="font-size: 12px; color: #6b7280;"></div>
                 </div>
-
-                <div id="loginError" class="error-message hidden"></div>
-
-                <button id="loginBtn" class="login-btn" onclick="handleLogin()">
-                    Sign In
-                </button>
-
-                <div class="mt-4 text-center">
-                    <p class="hint-text" id="roleHint">
-                        Employee access includes personal time tracking only
-                    </p>
-                </div>
+            </div>
+            <div>
+                <span id="payPeriodInfo" style="font-size: 14px; color: #6b7280; margin-right: 1rem;"></span>
+                <button id="logoutBtn" class="logout-btn">🚪 Sign Out</button>
             </div>
         </div>
 
-        <!-- Main Application -->
-        <div id="mainApp" class="hidden">
-            <!-- Header -->
-            <div class="header">
-                <div class="user-info">
-                    <div id="userAvatar" class="user-avatar"></div>
-                    <div>
-                        <div id="userName" class="font-bold"></div>
-                        <div id="userRole" class="text-secondary" style="font-size: 0.875rem;"></div>
-                    </div>
-                </div>
-                <button class="logout-btn" onclick="logout()">
-                    🚪 Sign Out
-                </button>
-            </div>
+        <div id="navigation" class="nav-tabs"></div>
 
-            <!-- Navigation -->
-            <div class="navigation">
-                <button class="nav-btn active" onclick="showView('dashboard')" id="navDashboard">
-                    📊 Dashboard
-                </button>
-                <button class="nav-btn" onclick="showView('timeclock')" id="navTimeclock">
-                    🕐 Time Clock
-                </button>
-                <button class="nav-btn" onclick="showView('employees')" id="navEmployees">
-                    👥 Employees
-                </button>
-                <button class="nav-btn" onclick="showView('reports')" id="navReports">
-                    📄 Reports
-                </button>
-            </div>
-
-            <!-- Main Content -->
-            <div class="main-content">
-                <!-- Dashboard View -->
-                <div id="dashboardView" class="fade-in">
-                    <div class="page-header">
-                        <div>
-                            <h1 class="page-title">Dashboard</h1>
-                            <p class="text-secondary">Pay Period: <span id="payPeriodText"></span></p>
-                        </div>
-                        <button class="btn btn-success" onclick="exportPayroll()">
-                            📥 Export Payroll
-                        </button>
-                    </div>
-
-                    <div class="stats-grid" id="statsGrid">
-                        <!-- Stats will be populated by JavaScript -->
-                    </div>
-
-                    <div class="card">
-                        <div class="card-header">Employee Summary</div>
-                        <div class="table-container">
-                            <table class="table" id="summaryTable">
-                                <thead>
-                                    <tr>
-                                        <th>Employee</th>
-                                        <th>Status</th>
-                                        <th class="text-right">Rate/Hr</th>
-                                        <th class="text-right">Regular</th>
-                                        <th class="text-right">Overtime</th>
-                                        <th class="text-right">Total Pay</th>
-                                    </tr>
-                                </thead>
-                                <tbody></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Time Clock View -->
-                <div id="timeclockView" class="hidden">
-                    <div class="clock-container">
-                        <h1 class="page-title text-center mb-4">Time Clock</h1>
-                        
-                        <div class="clock-card">
-                            <div id="clockIcon" class="clock-icon">🕐</div>
-                            <div id="currentTime" class="clock-time"></div>
-                            <div id="currentDate" class="clock-date"></div>
-                            <div id="clockStatus" class="clock-status clocked-out">
-                                <span class="status-dot inactive"></span>
-                                Currently Clocked Out
-                            </div>
-                            <button id="clockButton" class="clock-btn clock-in" onclick="toggleClock()">
-                                Clock In
-                            </button>
-                        </div>
-
-                        <div class="card">
-                            <div class="card-header">This Pay Period Summary</div>
-                            <div class="card-content">
-                                <div class="stats-grid">
-                                    <div class="stat-card">
-                                        <div class="stat-label">Regular Hours</div>
-                                        <div id="regularHoursStat" class="stat-value text-success">0.0</div>
-                                    </div>
-                                    <div class="stat-card">
-                                        <div class="stat-label">Overtime Hours</div>
-                                        <div id="overtimeHoursStat" class="stat-value text-warning">0.0</div>
-                                    </div>
-                                    <div class="stat-card">
-                                        <div class="stat-label">Total Hours</div>
-                                        <div id="totalHoursStat" class="stat-value text-primary">0.0</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Employees View -->
-                <div id="employeesView" class="hidden">
-                    <div class="page-header">
-                        <h1 class="page-title">Employee Management</h1>
-                        <button class="btn btn-primary" onclick="showAddEmployee()">
-                            ➕ Add Employee
-                        </button>
-                    </div>
-
-                    <div id="addEmployeeForm" class="card mb-4 hidden">
-                        <div class="card-header">Add New Employee</div>
-                        <div class="card-content">
-                            <div class="form-grid">
-                                <input type="text" id="newEmployeeName" class="form-input" placeholder="Full Name" required>
-                                <input type="email" id="newEmployeeEmail" class="form-input" placeholder="Email Address">
-                                <input type="number" id="newEmployeeRate" class="form-input" placeholder="Hourly Rate" step="0.01" required>
-                            </div>
-                            <div class="form-actions">
-                                <button class="btn btn-success" onclick="addEmployee()">Add Employee</button>
-                                <button class="btn btn-secondary" onclick="cancelAddEmployee()">Cancel</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card">
-                        <div class="card-header">All Employees</div>
-                        <div class="table-container">
-                            <table class="table" id="employeesTable">
-                                <thead>
-                                    <tr>
-                                        <th>Employee</th>
-                                        <th>Email</th>
-                                        <th class="text-right">Hourly Rate</th>
-                                        <th>Status</th>
-                                        <th class="text-right">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody></tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Reports View -->
-                <div id="reportsView" class="hidden">
-                    <div class="page-header">
-                        <h1 class="page-title">Reports</h1>
-                    </div>
-                    <div class="card">
-                        <div class="card-content text-center" style="padding: 3rem;">
-                            <p class="text-secondary">Detailed reporting features coming soon...</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="content">
+            <div id="tabContent"></div>
         </div>
     </div>
 
     <script>
-        // Application State
-        let currentUser = null;
-        let userRole = null;
-        let currentView = 'dashboard';
-        let clockInterval = null;
+        class TimesheetSystem {
+            constructor() {
+                this.employees = [
+                    { id: 1, name: 'John Doe', hourlyRate: 25.00, email: 'john.doe@company.com', active: true },
+                    { id: 2, name: 'Jane Smith', hourlyRate: 30.00, email: 'jane.smith@company.com', active: true },
+                    { id: 3, name: 'Mike Johnson', hourlyRate: 22.00, email: 'mike.johnson@company.com', active: true }
+                ];
+                
+                this.timeEntries = [
+                    { id: 1, employeeId: 1, clockIn: new Date('2025-08-01T09:00:00'), clockOut: new Date('2025-08-01T17:30:00') },
+                    { id: 2, employeeId: 1, clockIn: new Date('2025-08-02T08:45:00'), clockOut: new Date('2025-08-02T18:15:00') },
+                    { id: 3, employeeId: 2, clockIn: new Date('2025-08-01T09:30:00'), clockOut: new Date('2025-08-01T17:00:00') },
+                    { id: 4, employeeId: 2, clockIn: new Date('2025-08-02T09:00:00'), clockOut: new Date('2025-08-02T19:00:00') },
+                    { id: 5, employeeId: 3, clockIn: new Date('2025-08-01T08:00:00'), clockOut: new Date('2025-08-01T16:30:00') },
+                    { id: 6, employeeId: 3, clockIn: new Date('2025-08-02T08:30:00'), clockOut: new Date('2025-08-02T17:45:00') }
+                ];
 
-        // Sample Data
-        let employees = [
-            { id: 1, name: 'John Doe', email: 'john.doe@company.com', hourlyRate: 25.00, active: true },
-            { id: 2, name: 'Jane Smith', email: 'jane.smith@company.com', hourlyRate: 30.00, active: true },
-            { id: 3, name: 'Mike Johnson', email: 'mike.johnson@company.com', hourlyRate: 22.00, active: true }
-        ];
+                this.currentUser = null;
+                this.userRole = null;
+                this.currentTab = 'dashboard';
+                this.currentTime = null;
 
-        let timeEntries = [
-            { id: 1, employeeId: 1, clockIn: new Date('2025-08-01T09:00:00'), clockOut: new Date('2025-08-01T17:30:00') },
-            { id: 2, employeeId: 1, clockIn: new Date('2025-08-02T08:45:00'), clockOut: new Date('2025-08-02T18:15:00') },
-            { id: 3, employeeId: 2, clockIn: new Date('2025-08-01T09:30:00'), clockOut: new Date('2025-08-01T17:00:00') },
-            { id: 4, employeeId: 2, clockIn: new Date('2025-08-02T09:00:00'), clockOut: new Date('2025-08-02T19:00:00') },
-            { id: 5, employeeId: 3, clockIn: new Date('2025-08-01T08:00:00'), clockOut: new Date('2025-08-01T16:30:00') },
-            { id: 6, employeeId: 3, clockIn: new Date('2025-08-02T08:30:00'), clockOut: new Date('2025-08-02T17:45:00') }
-        ];
+                this.loadData();
+                this.initializeEventListeners();
+                this.populateEmployeeSelect();
+                this.startClock();
+            }
 
-        // Utility Functions
-        function getCurrentPayPeriod() {
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = now.getMonth();
-            const day = now.getDate();
+            // Data persistence
+            saveData() {
+                localStorage.setItem('timesheetEmployees', JSON.stringify(this.employees));
+                localStorage.setItem('timesheetEntries', JSON.stringify(this.timeEntries));
+            }
 
-            if (day <= 15) {
-                return {
-                    start: new Date(year, month, 1),
-                    end: new Date(year, month, 15, 23, 59, 59)
+            loadData() {
+                const savedEmployees = localStorage.getItem('timesheetEmployees');
+                const savedEntries = localStorage.getItem('timesheetEntries');
+                
+                if (savedEmployees) {
+                    this.employees = JSON.parse(savedEmployees);
+                }
+                
+                if (savedEntries) {
+                    this.timeEntries = JSON.parse(savedEntries).map(entry => ({
+                        ...entry,
+                        clockIn: new Date(entry.clockIn),
+                        clockOut: entry.clockOut ? new Date(entry.clockOut) : null
+                    }));
+                }
+            }
+
+            // Utility functions
+            getCurrentPayPeriod() {
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = now.getMonth();
+                const day = now.getDate();
+
+                if (day <= 15) {
+                    return {
+                        start: new Date(year, month, 1),
+                        end: new Date(year, month, 15, 23, 59, 59)
+                    };
+                } else {
+                    return {
+                        start: new Date(year, month, 16),
+                        end: new Date(year, month + 1, 0, 23, 59, 59)
+                    };
+                }
+            }
+
+            calculateHours(clockIn, clockOut) {
+                const diff = clockOut - clockIn;
+                return diff / (1000 * 60 * 60);
+            }
+
+            calculateOvertimeHours(totalHours) {
+                return Math.max(0, totalHours - 8);
+            }
+
+            formatTime(date) {
+                return date.toLocaleTimeString('en-US', { 
+                    hour: '2-digit', 
+                    minute: '2-digit',
+                    hour12: true 
+                });
+            }
+
+            formatDate(date) {
+                return date.toLocaleDateString('en-US', { 
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long', 
+                    day: 'numeric' 
+                });
+            }
+
+            // Authentication
+            initializeEventListeners() {
+                // Role toggle
+                document.getElementById('employeeRoleBtn').addEventListener('click', () => this.switchToEmployeeLogin());
+                document.getElementById('adminRoleBtn').addEventListener('click', () => this.switchToAdminLogin());
+
+                // Login buttons
+                document.getElementById('employeeLoginBtn').addEventListener('click', () => this.employeeLogin());
+                document.getElementById('adminLoginBtn').addEventListener('click', () => this.adminLogin());
+
+                // Password visibility toggle
+                document.getElementById('togglePassword').addEventListener('click', () => this.togglePasswordVisibility());
+
+                // Logout
+                document.getElementById('logoutBtn').addEventListener('click', () => this.logout());
+
+                // Enter key support
+                document.getElementById('adminPassword').addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') this.adminLogin();
+                });
+            }
+
+            switchToEmployeeLogin() {
+                document.getElementById('employeeRoleBtn').classList.add('active');
+                document.getElementById('adminRoleBtn').classList.remove('active');
+                document.getElementById('employeeForm').classList.remove('hidden');
+                document.getElementById('adminForm').classList.add('hidden');
+                document.getElementById('roleHint').textContent = 'Employee access includes personal time tracking only';
+                this.clearError();
+            }
+
+            switchToAdminLogin() {
+                document.getElementById('employeeRoleBtn').classList.remove('active');
+                document.getElementById('adminRoleBtn').classList.add('active', 'admin-active');
+                document.getElementById('employeeForm').classList.add('hidden');
+                document.getElementById('adminForm').classList.remove('hidden');
+                document.getElementById('roleHint').textContent = 'Admin access includes employee management, payroll, and financial data';
+                this.clearError();
+            }
+
+            togglePasswordVisibility() {
+                const passwordField = document.getElementById('adminPassword');
+                const toggleBtn = document.getElementById('togglePassword');
+                
+                if (passwordField.type === 'password') {
+                    passwordField.type = 'text';
+                    toggleBtn.textContent = '🙈';
+                } else {
+                    passwordField.type = 'password';
+                    toggleBtn.textContent = '👁️';
+                }
+            }
+
+            populateEmployeeSelect() {
+                const select = document.getElementById('employeeSelect');
+                select.innerHTML = '<option value="">Choose your name...</option>';
+                
+                this.employees.filter(emp => emp.active).forEach(emp => {
+                    const option = document.createElement('option');
+                    option.value = emp.id;
+                    option.textContent = emp.name;
+                    select.appendChild(option);
+                });
+            }
+
+            employeeLogin() {
+                const selectedId = document.getElementById('employeeSelect').value;
+                if (!selectedId) {
+                    this.showError('Please select your name');
+                    return;
+                }
+
+                const employee = this.employees.find(emp => emp.id == selectedId);
+                if (!employee) {
+                    this.showError('Employee not found');
+                    return;
+                }
+
+                this.currentUser = employee;
+                this.userRole = 'employee';
+                this.showMainApp();
+            }
+
+            adminLogin() {
+                const password = document.getElementById('adminPassword').value;
+                if (password !== 'admin123') {
+                    this.showError('Invalid admin password');
+                    return;
+                }
+
+                this.currentUser = { id: 'admin', name: 'Administrator' };
+                this.userRole = 'admin';
+                this.showMainApp();
+            }
+
+            logout() {
+                this.currentUser = null;
+                this.userRole = null;
+                this.currentTab = 'dashboard';
+                document.getElementById('loginScreen').classList.remove('hidden');
+                document.getElementById('mainApp').classList.add('hidden');
+                document.getElementById('employeeSelect').value = '';
+                document.getElementById('adminPassword').value = '';
+                this.clearError();
+            }
+
+            showError(message) {
+                const errorDiv = document.getElementById('loginError');
+                errorDiv.textContent = message;
+                errorDiv.classList.remove('hidden');
+            }
+
+            clearError() {
+                document.getElementById('loginError').classList.add('hidden');
+            }
+
+            // Main app
+            showMainApp() {
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('mainApp').classList.remove('hidden');
+                this.updateHeader();
+                this.createNavigation();
+                this.showTab(this.userRole === 'admin' ? 'dashboard' : 'timeclock');
+            }
+
+            updateHeader() {
+                const avatar = document.getElementById('userAvatar');
+                const userName = document.getElementById('userName');
+                const userRole = document.getElementById('userRole');
+                const payPeriodInfo = document.getElementById('payPeriodInfo');
+
+                avatar.style.backgroundColor = this.userRole === 'admin' ? '#7c3aed' : '#059669';
+                avatar.textContent = this.currentUser.name.split(' ').map(n => n[0]).join('');
+                userName.textContent = this.currentUser.name;
+                userRole.textContent = this.userRole === 'admin' ? 'Administrator' : 'Employee';
+
+                const payPeriod = this.getCurrentPayPeriod();
+                payPeriodInfo.textContent = `Pay Period: ${payPeriod.start.toLocaleDateString()} - ${payPeriod.end.toLocaleDateString()}`;
+            }
+
+            createNavigation() {
+                const nav = document.getElementById('navigation');
+                const tabs = this.userRole === 'admin' 
+                    ? [
+                        { id: 'dashboard', label: '📊 Dashboard' },
+                        { id: 'timeclock', label: '⏰ Time Clock' },
+                        { id: 'employees', label: '👥 Employees' },
+                        { id: 'reports', label: '📋 Reports' }
+                    ]
+                    : [
+                        { id: 'timeclock', label: '⏰ Time Clock' },
+                        { id: 'timesheet', label: '📅 My Timesheet' }
+                    ];
+
+                nav.innerHTML = tabs.map(tab => 
+                    `<button class="nav-tab ${this.userRole === 'admin' ? 'admin' : ''}" data-tab="${tab.id}">${tab.label}</button>`
+                ).join('');
+
+                nav.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('nav-tab')) {
+                        this.showTab(e.target.dataset.tab);
+                    }
+                });
+            }
+
+            showTab(tabId) {
+                this.currentTab = tabId;
+                
+                // Update nav
+                document.querySelectorAll('.nav-tab').forEach(tab => {
+                    tab.classList.toggle('active', tab.dataset.tab === tabId);
+                });
+
+                // Show content
+                const content = document.getElementById('tabContent');
+                content.innerHTML = '';
+                
+                switch (tabId) {
+                    case 'dashboard':
+                        this.showDashboard();
+                        break;
+                    case 'timeclock':
+                        this.showTimeClock();
+                        break;
+                    case 'employees':
+                        this.showEmployees();
+                        break;
+                    case 'timesheet':
+                        this.showTimesheet();
+                        break;
+                    case 'reports':
+                        this.showReports();
+                        break;
+                }
+                
+                content.classList.add('tab-content');
+            }
+
+            // Dashboard
+            showDashboard() {
+                if (this.userRole !== 'admin') return;
+
+                const payPeriod = this.getCurrentPayPeriod();
+                const summaries = this.employees.map(emp => this.getEmployeeSummary(emp.id, true));
+                const totals = summaries.reduce((acc, summary) => ({
+                    totalHours: acc.totalHours + summary.totalHours,
+                    regularHours: acc.regularHours + summary.regularHours,
+                    overtimeHours: acc.overtimeHours + summary.overtimeHours,
+                    totalPay: acc.totalPay + summary.totalPay
+                }), { totalHours: 0, regularHours: 0, overtimeHours: 0, totalPay: 0 });
+
+                document.getElementById('tabContent').innerHTML = `
+                    <div class="dashboard-header">
+                        <div>
+                            <h1>Admin Dashboard</h1>
+                            <p style="color: #7c3aed; font-weight: 600;">🛡️ Full Access Mode</p>
+                        </div>
+                        <button id="exportPayrollBtn" class="btn btn-success">📥 Export Payroll</button>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-label">Total Hours</div>
+                            <div class="stat-value" style="color: #667eea;">${totals.totalHours.toFixed(1)}h</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Regular Hours</div>
+                            <div class="stat-value" style="color: #059669;">${totals.regularHours.toFixed(1)}h</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Overtime Hours</div>
+                            <div class="stat-value" style="color: #f59e0b;">${totals.overtimeHours.toFixed(1)}h</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Total Pay</div>
+                            <div class="stat-value" style="color: #7c3aed;">$${totals.totalPay.toFixed(2)}</div>
+                        </div>
+                    </div>
+
+                    <div class="employee-table">
+                        <div class="table-header">Employee Summary</div>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Employee</th>
+                                    <th>Status</th>
+                                    <th>Rate/Hr</th>
+                                    <th>Regular</th>
+                                    <th>Overtime</th>
+                                    <th>Total Pay</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${summaries.map(summary => `
+                                    <tr>
+                                        <td>
+                                            <div style="font-weight: 600;">${summary.employee.name}</div>
+                                            <div style="font-size: 14px; color: #6b7280;">${summary.employee.email}</div>
+                                        </td>
+                                        <td>
+                                            <span class="status-badge ${this.isEmployeeClockedIn(summary.employee.id) ? 'status-clocked-in' : 'status-clocked-out'}">
+                                                ${this.isEmployeeClockedIn(summary.employee.id) ? '🟢 Clocked In' : '⚫ Clocked Out'}
+                                            </span>
+                                        </td>
+                                        <td style="font-weight: 600; color: #7c3aed;">$${summary.employee.hourlyRate.toFixed(2)}</td>
+                                        <td>${summary.regularHours.toFixed(1)}h</td>
+                                        <td style="color: ${summary.overtimeHours > 0 ? '#f59e0b' : '#374151'};">
+                                            ${summary.overtimeHours.toFixed(1)}h
+                                            ${summary.overtimeHours > 0 ? '⚠️' : ''}
+                                        </td>
+                                        <td style="font-weight: 600; color: #059669;">$${summary.totalPay.toFixed(2)}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+
+                document.getElementById('exportPayrollBtn').addEventListener('click', () => this.exportPayroll());
+            }
+
+            // Time Clock
+            showTimeClock() {
+                const isEmployee = this.userRole === 'employee';
+                const targetEmployeeId = isEmployee ? this.currentUser.id : null;
+                const clockEntries = targetEmployeeId 
+                    ? this.timeEntries.filter(entry => entry.employeeId === targetEmployeeId)
+                    : this.timeEntries;
+
+                if (isEmployee) {
+                    // Employee view - single time clock
+                    const summary = this.getEmployeeSummary(targetEmployeeId, false);
+                    const isClockedIn = this.isEmployeeClockedIn(targetEmployeeId);
+
+                    document.getElementById('tabContent').innerHTML = `
+                        <div class="time-clock">
+                            <div class="clock-card">
+                                <div class="current-time" id="currentTimeDisplay">--:--:--</div>
+                                <div class="current-date">${this.formatDate(new Date())}</div>
+                                
+                                <div class="clock-status ${isClockedIn ? 'status-in' : 'status-out'}">
+                                    ${isClockedIn ? '🟢 Currently Clocked In' : '⚫ Currently Clocked Out'}
+                                    ${isClockedIn ? '<div class="pulse" style="display: inline-block; margin-left: 8px;">●</div>' : ''}
+                                </div>
+                                
+                                <button id="clockToggleBtn" class="clock-btn ${isClockedIn ? 'clock-out' : 'clock-in'}">
+                                    ${isClockedIn ? '🚪 Clock Out' : '🕐 Clock In'}
+                                </button>
+                            </div>
+                            
+                            <div class="hours-summary">
+                                <h3>This Pay Period Summary</h3>
+                                <div class="summary-grid">
+                                    <div class="summary-item">
+                                        <div class="summary-value" style="color: #059669;">${summary.regularHours.toFixed(1)}</div>
+                                        <div class="summary-label">Regular Hours</div>
+                                    </div>
+                                    <div class="summary-item">
+                                        <div class="summary-value" style="color: #f59e0b;">${summary.overtimeHours.toFixed(1)}</div>
+                                        <div class="summary-label">Overtime Hours</div>
+                                    </div>
+                                    <div class="summary-item">
+                                        <div class="summary-value" style="color: #667eea;">${summary.totalHours.toFixed(1)}</div>
+                                        <div class="summary-label">Total Hours</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    document.getElementById('clockToggleBtn').addEventListener('click', () => {
+                        if (isClockedIn) {
+                            this.clockOut(targetEmployeeId);
+                        } else {
+                            this.clockIn(targetEmployeeId);
+                        }
+                        this.showTimeClock(); // Refresh the view
+                    });
+                } else {
+                    // Admin view - all employees
+                    const employeeCards = this.employees.filter(emp => emp.active).map(emp => {
+                        const summary = this.getEmployeeSummary(emp.id, false);
+                        const isClockedIn = this.isEmployeeClockedIn(emp.id);
+                        
+                        return `
+                            <div class="stat-card" style="text-align: center;">
+                                <div style="width: 60px; height: 60px; border-radius: 50%; background: ${isClockedIn ? '#059669' : '#6b7280'}; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; margin: 0 auto 1rem;">
+                                    ${emp.name.split(' ').map(n => n[0]).join('')}
+                                </div>
+                                <h4 style="margin-bottom: 0.5rem;">${emp.name}</h4>
+                                <div class="status-badge ${isClockedIn ? 'status-clocked-in' : 'status-clocked-out'}" style="margin-bottom: 1rem;">
+                                    ${isClockedIn ? '🟢 Clocked In' : '⚫ Clocked Out'}
+                                </div>
+                                <div style="font-size: 14px; color: #6b7280; margin-bottom: 1rem;">
+                                    Today: ${summary.totalHours.toFixed(1)}h
+                                    ${summary.overtimeHours > 0 ? `(${summary.overtimeHours.toFixed(1)}h OT)` : ''}
+                                </div>
+                                <button class="btn ${isClockedIn ? 'btn-secondary' : 'btn-success'}" style="width: 100%;" onclick="app.${isClockedIn ? 'clockOut' : 'clockIn'}(${emp.id}); app.showTimeClock();">
+                                    ${isClockedIn ? '🚪 Clock Out' : '🕐 Clock In'}
+                                </button>
+                            </div>
+                        `;
+                    }).join('');
+
+                    document.getElementById('tabContent').innerHTML = `
+                        <div>
+                            <h1>Time Clock - All Employees</h1>
+                            <p style="color: #6b7280; margin-bottom: 2rem;">Admin view - manage all employee time tracking</p>
+                            <div class="stats-grid">
+                                ${employeeCards}
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+
+            // Employee Management
+            showEmployees() {
+                if (this.userRole !== 'admin') return;
+
+                document.getElementById('tabContent').innerHTML = `
+                    <div class="dashboard-header">
+                        <h1>Employee Management</h1>
+                        <button id="addEmployeeBtn" class="btn btn-primary">➕ Add Employee</button>
+                    </div>
+
+                    <div id="addEmployeeForm" class="add-employee-form hidden">
+                        <h3 style="margin-bottom: 1rem;">Add New Employee</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Full Name</label>
+                                <input id="newEmpName" type="text" class="form-input" placeholder="John Doe">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Email</label>
+                                <input id="newEmpEmail" type="email" class="form-input" placeholder="john@company.com">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Hourly Rate</label>
+                                <input id="newEmpRate" type="number" step="0.01" class="form-input" placeholder="25.00">
+                            </div>
+                        </div>
+                        <div style="display: flex; gap: 1rem;">
+                            <button id="saveEmployeeBtn" class="btn btn-success">💾 Add Employee</button>
+                            <button id="cancelEmployeeBtn" class="btn btn-secondary">❌ Cancel</button>
+                        </div>
+                    </div>
+
+                    <div class="employee-table">
+                        <div class="table-header">All Employees</div>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Employee</th>
+                                    <th>Email</th>
+                                    <th>Hourly Rate</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${this.employees.map(emp => `
+                                    <tr>
+                                        <td style="font-weight: 600;">${emp.name}</td>
+                                        <td>${emp.email}</td>
+                                        <td style="font-weight: 600; color: #7c3aed;">$${emp.hourlyRate.toFixed(2)}</td>
+                                        <td>
+                                            <span class="status-badge ${emp.active ? 'status-clocked-in' : 'status-clocked-out'}">
+                                                ${emp.active ? '✅ Active' : '❌ Inactive'}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 12px;" onclick="app.editEmployee(${emp.id})">
+                                                ✏️ Edit
+                                            </button>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+
+                // Add event listeners
+                document.getElementById('addEmployeeBtn').addEventListener('click', () => {
+                    document.getElementById('addEmployeeForm').classList.toggle('hidden');
+                });
+
+                document.getElementById('cancelEmployeeBtn').addEventListener('click', () => {
+                    document.getElementById('addEmployeeForm').classList.add('hidden');
+                    this.clearEmployeeForm();
+                });
+
+                document.getElementById('saveEmployeeBtn').addEventListener('click', () => {
+                    this.addEmployee();
+                });
+            }
+
+            // Timesheet view for employees
+            showTimesheet() {
+                if (this.userRole !== 'employee') return;
+
+                const payPeriod = this.getCurrentPayPeriod();
+                const entries = this.timeEntries.filter(entry => 
+                    entry.employeeId === this.currentUser.id &&
+                    entry.clockIn >= payPeriod.start &&
+                    entry.clockIn <= payPeriod.end
+                );
+
+                document.getElementById('tabContent').innerHTML = `
+                    <div>
+                        <h1>My Timesheet</h1>
+                        <p style="color: #6b7280; margin-bottom: 2rem;">
+                            Pay Period: ${payPeriod.start.toLocaleDateString()} - ${payPeriod.end.toLocaleDateString()}
+                        </p>
+
+                        <div class="employee-table">
+                            <div class="table-header">Time Entries</div>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Clock In</th>
+                                        <th>Clock Out</th>
+                                        <th>Hours</th>
+                                        <th>Overtime</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${entries.length === 0 ? 
+                                        '<tr><td colspan="5" style="text-align: center; color: #6b7280;">No time entries for this pay period</td></tr>' :
+                                        entries.map(entry => {
+                                            const hours = entry.clockOut ? this.calculateHours(entry.clockIn, entry.clockOut) : 0;
+                                            const overtime = this.calculateOvertimeHours(hours);
+                                            return `
+                                                <tr>
+                                                    <td>${entry.clockIn.toLocaleDateString()}</td>
+                                                    <td>${this.formatTime(entry.clockIn)}</td>
+                                                    <td>${entry.clockOut ? this.formatTime(entry.clockOut) : 'Still clocked in'}</td>
+                                                    <td>${hours.toFixed(2)}h</td>
+                                                    <td style="color: ${overtime > 0 ? '#f59e0b' : '#374151'};">
+                                                        ${overtime.toFixed(2)}h ${overtime > 0 ? '⚠️' : ''}
+                                                    </td>
+                                                </tr>
+                                            `;
+                                        }).join('')
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Reports
+            showReports() {
+                if (this.userRole !== 'admin') return;
+
+                document.getElementById('tabContent').innerHTML = `
+                    <div>
+                        <h1>Reports</h1>
+                        <div class="stat-card" style="text-align: center; padding: 3rem;">
+                            <h3>📊 Advanced Reports Coming Soon</h3>
+                            <p style="color: #6b7280; margin: 1rem 0;">
+                                Enhanced reporting features will include:
+                            </p>
+                            <ul style="list-style: none; padding: 0; color: #6b7280;">
+                                <li>📈 Weekly/Monthly summaries</li>
+                                <li>📊 Employee performance analytics</li>
+                                <li>💰 Detailed payroll breakdowns</li>
+                                <li>📋 Custom date range reports</li>
+                            </ul>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Employee operations
+            getEmployeeSummary(employeeId, includeFinancials = false) {
+                const employee = this.employees.find(e => e.id === employeeId);
+                if (!employee) return null;
+
+                const payPeriod = this.getCurrentPayPeriod();
+                const entries = this.timeEntries.filter(entry => 
+                    entry.employeeId === employeeId &&
+                    entry.clockIn >= payPeriod.start &&
+                    entry.clockIn <= payPeriod.end
+                );
+
+                let totalHours = 0;
+                let overtimeHours = 0;
+
+                entries.forEach(entry => {
+                    if (entry.clockOut) {
+                        const hours = this.calculateHours(entry.clockIn, entry.clockOut);
+                        totalHours += hours;
+                        overtimeHours += this.calculateOvertimeHours(hours);
+                    }
+                });
+
+                const regularHours = Math.max(0, totalHours - overtimeHours);
+                
+                const result = {
+                    employee,
+                    entries,
+                    totalHours: Math.round(totalHours * 100) / 100,
+                    regularHours: Math.round(regularHours * 100) / 100,
+                    overtimeHours: Math.round(overtimeHours * 100) / 100
                 };
-            } else {
-                return {
-                    start: new Date(year, month, 16),
-                    end: new Date(year, month + 1, 0, 23, 59, 59)
+
+                if (includeFinancials && this.userRole === 'admin') {
+                    const regularPay = regularHours * employee.hourlyRate;
+                    const overtimePay = overtimeHours * employee.hourlyRate * 1.5;
+                    const totalPay = regularPay + overtimePay;
+
+                    result.totalPay = Math.round(totalPay * 100) / 100;
+                    result.regularPay = Math.round(regularPay * 100) / 100;
+                    result.overtimePay = Math.round(overtimePay * 100) / 100;
+                }
+
+                return result;
+            }
+
+            clockIn(employeeId) {
+                if (this.userRole === 'employee' && employeeId !== this.currentUser.id) return;
+                
+                const newEntry = {
+                    id: Date.now(),
+                    employeeId,
+                    clockIn: new Date(),
+                    clockOut: null
                 };
+                this.timeEntries.push(newEntry);
+                this.saveData();
+            }
+
+            clockOut(employeeId) {
+                if (this.userRole === 'employee' && employeeId !== this.currentUser.id) return;
+
+                const activeEntry = this.timeEntries.find(entry => 
+                    entry.employeeId === employeeId && 
+                    !entry.clockOut
+                );
+                
+                if (activeEntry) {
+                    activeEntry.clockOut = new Date();
+                    this.saveData();
+                }
+            }
+
+            isEmployeeClockedIn(employeeId) {
+                return this.timeEntries.some(entry => 
+                    entry.employeeId === employeeId && 
+                    !entry.clockOut
+                );
+            }
+
+            addEmployee() {
+                const name = document.getElementById('newEmpName').value.trim();
+                const email = document.getElementById('newEmpEmail').value.trim();
+                const rate = parseFloat(document.getElementById('newEmpRate').value);
+
+                if (!name || !email || !rate) {
+                    alert('Please fill in all fields');
+                    return;
+                }
+
+                const newEmployee = {
+                    id: Date.now(),
+                    name,
+                    email,
+                    hourlyRate: rate,
+                    active: true
+                };
+
+                this.employees.push(newEmployee);
+                this.saveData();
+                this.populateEmployeeSelect();
+                this.showEmployees();
+                this.clearEmployeeForm();
+            }
+
+            clearEmployeeForm() {
+                document.getElementById('newEmpName').value = '';
+                document.getElementById('newEmpEmail').value = '';
+                document.getElementById('newEmpRate').value = '';
+            }
+
+            editEmployee(employeeId) {
+                // Placeholder for edit functionality
+                alert('Edit employee feature coming soon!');
+            }
+
+            exportPayroll() {
+                if (this.userRole !== 'admin') return;
+
+                const summaries = this.employees.map(emp => this.getEmployeeSummary(emp.id, true));
+                const csvContent = [
+                    'Employee,Regular Hours,Overtime Hours,Total Hours,Regular Pay,Overtime Pay,Total Pay',
+                    ...summaries.map(s => 
+                        `${s.employee.name},${s.regularHours},${s.overtimeHours},${s.totalHours},${s.regularPay || 0},${s.overtimePay || 0},${s.totalPay || 0}`
+                    )
+                ].join('\n');
+                
+                const blob = new Blob([csvContent], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `payroll_${new Date().toISOString().split('T')[0]}.csv`;
+                a.click();
+                window.URL.revokeObjectURL(url);
+            }
+
+            // Clock functionality
+            startClock() {
+                this.updateClock();
+                setInterval(() => this.updateClock(), 1000);
+            }
+
+            updateClock() {
+                const now = new Date();
+                this.currentTime = now;
+                
+                const timeDisplay = document.getElementById('currentTimeDisplay');
+                if (timeDisplay) {
+                    timeDisplay.textContent = now.toLocaleTimeString('en-US', {
+                        hour12: true,
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit'
+                    });
+                }
             }
         }
 
-        function calculateHours(clockIn, clockOut) {
-            return (clockOut - clockIn) / (1000 * 60 * 60);
-        }
-
-        function calculateOvertimeHours(dailyHours) {
-            return Math.max(0, dailyHours - 8);
-        }
-
-        function formatTime(date) {
-            return date.toLocaleTimeString('en-US', {
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-                hour12: true
-            });
-        }
-
-        function formatDate(date) {
-            return date.toLocaleDateString('en-US', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
-        }
-
-        function formatShortDate(date) {
-            return date.toLocaleDateString('en-US', {
-                weekday: 'short',
-                month: 'short',
-                day: 'numeric'
-            });
-        }
-
-        // Authentication Functions
-        function selectRole(role) {
-            const roleBtns = document.querySelectorAll('.role-btn');
-            const employeeLogin = document.getElementById('employeeLogin');
-            const adminLogin = document.getElementById('adminLogin');
-            const loginBtn = document.
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Timesheet Login</title>
-  <style>
-    body { display:flex; align-items:center; justify-content:center; min-height:100vh; background:#5b6ef2; margin:0; }
-    .card { background:#fff; padding:2rem; border-radius:8px; width:320px; box-shadow:0 4px 12px rgba(0,0,0,0.1); }
-    .roles { display:flex; margin-bottom:1rem; }
-    .roles button { flex:1; padding:.5rem; border:none; cursor:pointer; background:#eee; transition:background .2s; }
-    .roles button.active { background:#059669; color:#fff; }
-    .hidden { display:none; }
-    .form-group { margin-bottom:1rem; }
-    label { display:block; margin-bottom:.25rem; font-size:.9rem; }
-    select, input { width:100%; padding:.5rem; border:1px solid #ccc; border-radius:4px; }
-    .btn { width:100%; padding:.75rem; background:#059669; color:#fff; border:none; border-radius:4px; cursor:pointer; }
-  </style>
-</head>
-<body>
-  <div class="card">
-    <h2>Timesheet System</h2>
-    <p>Please select your role</p>
-    <div class="roles">
-      <button id="btn-employee" class="active">Employee</button>
-      <button id="btn-admin">Admin</button>
-    </div>
-    <form id="form-employee">
-      <div class="form-group">
-        <label for="emp-name">Select Your Name</label>
-        <select id="emp-name">
-          <option value="">Choose your name…</option>
-          <option value="1">John Doe</option>
-          <option value="2">Jane Smith</option>
-          <option value="3">Mike Johnson</option>
-        </select>
-      </div>
-      <button type="button" class="btn">Sign In</button>
-    </form>
-    <form id="form-admin" class="hidden">
-      <div class="form-group">
-        <label for="admin-pass">Admin Password</label>
-        <input id="admin-pass" type="password" placeholder="Enter password" />
-      </div>
-      <button type="button" class="btn">Sign In as Admin</button>
-    </form>
-  </div>
-
-  <script>
-    const btnEmp = document.getElementById('btn-employee');
-    const btnAdm = document.getElementById('btn-admin');
-    const frmEmp = document.getElementById('form-employee');
-    const frmAdm = document.getElementById('form-admin');
-
-    btnEmp.addEventListener('click', () => {
-      btnEmp.classList.add('active');
-      btnAdm.classList.remove('active');
-      frmEmp.classList.remove('hidden');
-      frmAdm.classList.add('hidden');
-    });
-
-    btnAdm.addEventListener('click', () => {
-      btnAdm.classList.add('active');
-      btnEmp.classList.remove('active');
-      frmAdm.classList.remove('hidden');
-      frmEmp.classList.add('hidden');
-    });
-  </script>
+        // Initialize the application
+        let app;
+        document.addEventListener('DOMContentLoaded', () => {
+            app = new TimesheetSystem();
+        });
+    </script>
 </body>
 </html>
+
+                    
